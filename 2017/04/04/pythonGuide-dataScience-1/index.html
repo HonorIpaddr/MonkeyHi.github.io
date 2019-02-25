@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="MonkeyHi" />
+
+
+
+<meta name="description" content="摘要：从 交互式界面 开始
+
+进入界面
+计算器,number
+尝试变量赋值
+尝试字符串操作,string
+
+
+千里之行，始于足下^&amp;amp;^">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第一次运行python程序,从命令行交互开始">
+<meta property="og:url" content="https://MonkeyHi.github.io/2017/04/04/pythonGuide-dataScience-1/index.html">
+<meta property="og:site_name" content="MonkeyHi">
+<meta property="og:description" content="摘要：从 交互式界面 开始
+
+进入界面
+计算器,number
+尝试变量赋值
+尝试字符串操作,string
+
+
+千里之行，始于足下^&amp;amp;^">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4830879-e6bcba0aa4e9d53d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-04-05T07:29:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="第一次运行python程序,从命令行交互开始">
+<meta name="twitter:description" content="摘要：从 交互式界面 开始
+
+进入界面
+计算器,number
+尝试变量赋值
+尝试字符串操作,string
+
+
+千里之行，始于足下^&amp;amp;^">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4830879-e6bcba0aa4e9d53d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>第一次运行python程序,从命令行交互开始 | MonkeyHi</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">MonkeyHi</a></h1>
+        </hgroup>
+
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:rddapi@qq.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/MonkeyHi" title="GitHub"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/BBR/">BBR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Guides/">Guides</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hello/">Hello</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/World/">World</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cd/">cd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ci/">ci</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/continuous-deployment/">continuous-deployment</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/continuous-intergration-java/">continuous-intergration-java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dataScience/">dataScience</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/guids/">guids</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nunjucks/">nunjucks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/powershell/">powershell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snippets/">snippets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/thinkjs/">thinkjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vscode/">vscode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/持续部署/">持续部署</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/持续集成/">持续集成</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">MonkeyHi</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">MonkeyHi</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:rddapi@qq.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/MonkeyHi" title="GitHub"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-pythonGuide-dataScience-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/04/pythonGuide-dataScience-1/" class="article-date">
+      <time datetime="2017-04-03T16:10:27.000Z" itemprop="datePublished">2017-04-04</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      第一次运行python程序,从命令行交互开始
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Python/">Python</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Guides/">Guides</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dataScience/">dataScience</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>摘要：<br>从 交互式界面 开始</p>
+<ol>
+<li>进入界面</li>
+<li>计算器,number</li>
+<li>尝试变量赋值</li>
+<li>尝试字符串操作,string</li>
+</ol>
+<blockquote>
+<p>千里之行，始于足下^&amp;^</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Python从零开始系列"><a href="#Python从零开始系列" class="headerlink" title="Python从零开始系列"></a>Python从零开始系列</h1><h2 id="交互式界面"><a href="#交互式界面" class="headerlink" title="交互式界面"></a>交互式界面</h2><h3 id="理解命令行交互界面"><a href="#理解命令行交互界面" class="headerlink" title="理解命令行交互界面"></a>理解命令行交互界面</h3><p>python提供了一个命令行交互式界面。对于新手，可能一时半会儿难以理解 “交互界面”。为了便于理解，我们打个比方.比如cmd中，<br>我们运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ping www.baidu.com</div></pre></td></tr></table></figure></p>
+<p>接着会有回显<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">C:\Users\0xff007&gt;ping www.baidu.com</div><div class="line"></div><div class="line">正在 Ping www.a.shifen.com [111.13.100.92] 具有 32 字节的数据:</div><div class="line">来自 111.13.100.92 的回复: 字节=32 时间=15ms TTL=54</div><div class="line">来自 111.13.100.92 的回复: 字节=32 时间=14ms TTL=54</div><div class="line">来自 111.13.100.92 的回复: 字节=32 时间=15ms TTL=54</div><div class="line">来自 111.13.100.92 的回复: 字节=32 时间=14ms TTL=54</div><div class="line"></div><div class="line">111.13.100.92 的 Ping 统计信息:</div><div class="line">    数据包: 已发送 = 4，已接收 = 4，丢失 = 0 (0% 丢失)，</div><div class="line">往返行程的估计时间(以毫秒为单位):</div><div class="line">    最短 = 14ms，最长 = 15ms，平均 = 14ms</div><div class="line"></div><div class="line">C:\Users\0xff007&gt;</div></pre></td></tr></table></figure></p>
+<p>这种输入指令，回显结果就式一种命令行交互界面。</p>
+<h3 id="进入python的交互界面"><a href="#进入python的交互界面" class="headerlink" title="进入python的交互界面"></a>进入python的交互界面</h3><p>只要cmd里一个单词作为指令即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python</div></pre></td></tr></table></figure></p>
+<p>回车后得到界面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">C:\Users\0xff007&gt;python</div><div class="line">Python 3.6.1 (v3.6.1:69c0db5, Mar 21 2017, 18:41:36) [MSC v.1900 64 bit (AMD64)] on win32</div><div class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>我们的指令就在 “&gt;&gt;&gt;” 后输入</p>
+<h3 id="退出python的命令行交互界面"><a href="#退出python的命令行交互界面" class="headerlink" title="退出python的命令行交互界面"></a>退出python的命令行交互界面</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; exit()</div></pre></td></tr></table></figure>
+<h3 id="入门必学”hello-Python-world”"><a href="#入门必学”hello-Python-world”" class="headerlink" title="入门必学”hello,Python world”"></a>入门必学”hello,Python world”</h3><p>如下所示，只要使用print()函数，嵌入需要回显的字符串就好。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Python 3.6.1 (v3.6.1:69c0db5, Mar 21 2017, 18:41:36) [MSC v.1900 64 bit (AMD64)] on win32</div><div class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</div><div class="line">&gt;&gt;&gt; print(&quot;hello,Python world&quot;)</div><div class="line">hello,Python world</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>到这里，我们学会了简单的使用交互界面回显字符串。</p>
+<h3 id="计算器-number"><a href="#计算器-number" class="headerlink" title="计算器,number"></a>计算器,number</h3><p>python的命令行交互界面对于新手，最实惠的一个功能，可以当作计算器。<br>在命令行交互界面中，我们可以直接输入运算符连接数字的表达式来做运算，这听起来是不是很像小时候玩过的计算器。</p>
+<p>下面大家一起来看一些例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; 2+6 # 2+6 结果 8</div><div class="line">8</div><div class="line">&gt;&gt;&gt; 2*6 # 2乘以6 结果12</div><div class="line">12</div><div class="line">&gt;&gt;&gt; 6-2</div><div class="line">4</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>注意，上面 表达式 2+6 后面#号 是注释符，其后所更内容是注释，我这里添加注释是为了方便大家理解。<br>更多例子<br>乘方<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; 2**10</div><div class="line">1024</div></pre></td></tr></table></figure></p>
+</blockquote>
+<p>除法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; 17//3</div><div class="line">5</div><div class="line">&gt;&gt;&gt; 17/3</div><div class="line">5.666666666666667</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>混合运算<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; (30+3*5)%6</div><div class="line">3</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>这时候可能有同鞋会发出疑问啦，可不可以用字符或字符串来存储一些值呢。答案是肯定的。这里我们简单的尝试一下。后续会有章节详细讲解<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; num1 = 1024</div><div class="line">&gt;&gt;&gt; num1</div><div class="line">1024</div><div class="line">&gt;&gt;&gt; num1 = 2048</div><div class="line">&gt;&gt;&gt; num1</div><div class="line">2048</div><div class="line">&gt;&gt;&gt; num2 = 201314</div><div class="line">&gt;&gt;&gt; print(num2)</div><div class="line">201314</div><div class="line">&gt;&gt;&gt; num1+num2</div><div class="line">203362</div><div class="line">&gt;&gt;&gt; num3</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">NameError: name &apos;num3&apos; is not defined</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>从上面结果可以看到，我们给num1赋值1024，此时num1的值就是1024。随后我们又赋值为2048，其值就变为2048。两个变量名在被赋予值的同时被声明，也因此可以参与运算了。最后我们试着call num3，发现回显traceback, 提示NameError,说，这个num3 未被定义。仔细看看我们的实验过程，确实没有给num3赋予任何值，也从未定义过声明过num3时什么东东。</p>
+<p>到这里呢，我们学会了使用命令式交互脚本来做常见的数学计算，简单的变量赋值。同时我们第一次比较明白的看了一回错误回显，相信后续再遇到麻烦，大家就懂得从这些错误回显中寻找蛛丝马迹了。</p>
+<blockquote>
+<p>ps 新手很容易困惑的一件事儿， 等号和赋值号容易混淆。在coding world，数学中的 = 表示其右边的值或表达式的值赋予左边的变量<br>而等号变成了 == 或者 === 之类的，在python中是 ==</p>
+</blockquote>
+<p>另外值得一提的是,除了 int 和float类型,python的number还支持complex numbers,以及十进制二进制等,这里就不一一列举了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; 3+4j</div><div class="line">(3+4j)</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>最后我们再来试试比较有实际意义的计算。注意，其中的 _ 表示暂存上次计算数值，用于计算计算。最后呢，我们用round()函数是结果保留了小数点后的两位。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; tax = 12.5 / 100</div><div class="line">&gt;&gt;&gt; price = 100.50</div><div class="line">&gt;&gt;&gt; price * tax</div><div class="line">12.5625</div><div class="line">&gt;&gt;&gt; price + _</div><div class="line">113.0625</div><div class="line">&gt;&gt;&gt; round(_, 2)</div><div class="line">113.06</div></pre></td></tr></table></figure></p>
+<h3 id="尝试字符串操作"><a href="#尝试字符串操作" class="headerlink" title="尝试字符串操作"></a>尝试字符串操作</h3><p> 学习一些高级编程语言时，都会学习字符串处理，很多时候字符串处理可以带来极大的方便。这个过程中，我们可以更深刻的认识python的语言特性</p>
+<ol>
+<li><p>字符串输出<br>直接从python3.6.1的doc中抽取一小段演示代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; &apos;spam eggs&apos;  # 使用单引号的字符串</div><div class="line">&apos;spam eggs&apos;</div><div class="line">&gt;&gt;&gt; &apos;doesn\&apos;t&apos;  # 使用 反斜杠 \&apos; 转义 ，让反斜杠后的 单引号不被识别为引号对的结束。这样字符串里就可以显示出引号了</div><div class="line">&quot;doesn&apos;t&quot;</div><div class="line">&gt;&gt;&gt; &quot;doesn&apos;t&quot;  # 使用双引号也可以再字符串中表达出单引号。</div><div class="line">&quot;doesn&apos;t&quot;</div><div class="line">&gt;&gt;&gt; &apos;&quot;Yes,&quot; he said.&apos;</div><div class="line">&apos;&quot;Yes,&quot; he said.&apos;</div><div class="line">&gt;&gt;&gt; &quot;\&quot;Yes,\&quot; he said.&quot;</div><div class="line">&apos;&quot;Yes,&quot; he said.&apos;</div><div class="line">&gt;&gt;&gt; &apos;&quot;Isn\&apos;t,&quot; she said.&apos;</div><div class="line">&apos;&quot;Isn\&apos;t,&quot; she said.&apos;</div></pre></td></tr></table></figure>
+<p>有时候，我们希望回显出可读性更高的字符串，又或者时拼接及其灵活的字符串。这时候我们可以再次尝试print()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; &apos;&quot;Isn\&apos;t,&quot; she said.&apos;</div><div class="line">&apos;&quot;Isn\&apos;t,&quot; she said.&apos;</div><div class="line">&gt;&gt;&gt; print(&apos;&quot;Isn\&apos;t,&quot; she said.&apos;)</div><div class="line">&quot;Isn&apos;t,&quot; she said.</div><div class="line">&gt;&gt;&gt; s = &apos;First line.\nSecond line.&apos;  # \n 是换行符 ，</div><div class="line">&gt;&gt;&gt; s  # 不用print()函数时， \n 不会被理解为换行 ，所以结果中会包含 字符串\n,并且显示结果时一行</div><div class="line">&apos;First line.\nSecond line.&apos;</div><div class="line">&gt;&gt;&gt; print(s)  # 用print() 函数来打印字符串的花， \n 就会被识别为换行符，结果就会在\n 后新起一行显示其后内容</div><div class="line">First line.</div><div class="line">Second line.</div></pre></td></tr></table></figure>
+</li>
+<li><p>左斜杠的神奇之处<br>有时候，我们也许不想要print()函数中的 \ 生效,可以试着在字符串的引号前加上一个r</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; print(&apos;C:\some\name&apos;)  # here \n means newline!</div><div class="line">C:\some</div><div class="line">ame</div><div class="line">&gt;&gt;&gt; print(r&apos;C:\some\name&apos;)  # note the r before the quote</div><div class="line">C:\some\name</div></pre></td></tr></table></figure>
+</li>
+<li><p>输出多行字符串<br>输出多行字符串</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; print(&apos;&apos;&apos;hello</div><div class="line">... world</div><div class="line">... llls&apos;&apos;&apos;)</div><div class="line">hello</div><div class="line">world</div><div class="line">llls</div><div class="line">&gt;&gt;&gt; print(&quot;&quot;&quot;</div><div class="line">... llll</div><div class="line">... lslos</div><div class="line">... osk??</div><div class="line">... lsls&quot;&quot;&quot;)</div><div class="line">llll</div><div class="line">lslos</div><div class="line">osk??</div><div class="line">lsls</div><div class="line">&gt;&gt;&gt; print(&quot;&quot;&quot;\</div><div class="line">... sss</div><div class="line">... sdd</div><div class="line">... fe&quot;&quot;&quot;)</div><div class="line">sss</div><div class="line">sdd</div><div class="line">fe</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>diy一个命令帮助的回显</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; print(&quot;&quot;&quot;\</div><div class="line">... Usage: thingy [OPTIONS]</div><div class="line">...      -h                        Display this usage message</div><div class="line">...      -H hostname               Hostname to connect to</div><div class="line">... &quot;&quot;&quot;)</div><div class="line">Usage: thingy [OPTIONS]</div><div class="line">    -h                        Display this usage message</div><div class="line">    -H hostname               Hostname to connect to</div><div class="line"></div><div class="line">&gt;&gt;&gt; print(&quot;&quot;&quot;</div><div class="line">... Usage: thingy [OPTIONS]</div><div class="line">...      -h                        Display this usage message</div><div class="line">...      -H hostname               Hostname to connect to</div><div class="line">... &quot;&quot;&quot;)</div><div class="line"></div><div class="line">Usage: thingy [OPTIONS]</div><div class="line">    -h                        Display this usage message</div><div class="line">    -H hostname               Hostname to connect to</div><div class="line"></div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>字符串拼接<br>两个字符串直接拼接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; &apos;Py&apos; &apos;thon&apos;</div><div class="line">&apos;Python&apos;</div></pre></td></tr></table></figure>
+<p> 带运算的字符串拼接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; # 3 times &apos;un&apos;, followed by &apos;ium&apos;</div><div class="line">&gt;&gt;&gt; 3 * &apos;un&apos; + &apos;ium&apos;</div><div class="line">&apos;unununium&apos;</div></pre></td></tr></table></figure>
+<p> 变量存贮字符串并拼接.注意,字符串拼接要用 加号 + .不然会报错哦, 会直接提示语法错误的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; prefix = &apos;Py&apos;</div><div class="line">&gt;&gt;&gt; prefix &apos;thon&apos;  # can&apos;t concatenate a variable and a string literal</div><div class="line">  ...</div><div class="line">SyntaxError: invalid syntax</div><div class="line">&gt;&gt;&gt; (&apos;un&apos; * 3) &apos;ium&apos;</div><div class="line">  ...</div><div class="line">SyntaxError: invalid syntax</div><div class="line">&gt;&gt;&gt; prefix + &apos;thon&apos;</div><div class="line">&apos;Python&apos;</div></pre></td></tr></table></figure>
+</li>
+<li><p>字符串索引<br>python的字符串是可以索引的,看下面这个图示,大家应该很容易明白的</p>
+<blockquote>
+<p>var1= “PYTHON” # 定义一个字符串变量var1</p>
+<p>$_0P_1Y_2T_3H_4O_5N_6$</p>
+<p>这样,对于字符串 var1[0,3]则表示下标0与下标3之间的字符串 PYT .</p>
+</blockquote>
+<p>如果还是不明白,再看看这个</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"> +---+---+---+---+---+---+</div><div class="line"> | P | y | t | h | o | n |</div><div class="line"> +---+---+---+---+---+---+</div><div class="line"> 0   1   2   3   4   5   6</div><div class="line">-6  -5  -4  -3  -2  -1</div></pre></td></tr></table></figure>
+<p>做几个小实验,帮助理解</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; word = &quot;visul Studio Code&quot;</div><div class="line">&gt;&gt;&gt; word</div><div class="line">&apos;visul Studio Code&apos;</div><div class="line">&gt;&gt;&gt; word[0]</div><div class="line">&apos;v&apos;</div><div class="line">&gt;&gt;&gt; word[2]</div><div class="line">&apos;s&apos;</div><div class="line">&gt;&gt;&gt; word[2:]</div><div class="line">&apos;sul Studio Code&apos;</div><div class="line">&gt;&gt;&gt; word[5:]</div><div class="line">&apos; Studio Code&apos;</div><div class="line">&gt;&gt;&gt; word[6:12]</div><div class="line">&apos;Studio&apos;</div><div class="line">&gt;&gt;&gt; word[:12]</div><div class="line">&apos;visul Studio&apos;</div><div class="line">&gt;&gt;&gt; len(word) #获取 word的字符串长度</div><div class="line">17</div><div class="line">&gt;&gt;&gt; word[18] #超出下标范围会报错</div><div class="line">Traceback (most recent call last):</div><div class="line">File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">IndexError: string index out of range</div><div class="line">&gt;&gt;&gt; word[6:12]+&quot; python&quot; #字符串截取再拼接</div><div class="line">&apos;Studio python&apos;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>通过上面的学习，大家应该也发现了命令行交互的一个好处，给指令，立刻生效。无论赋值，还是一些回显行为，都是即刻执行。</p>
+<p>这一篇,我们了解到了如下知识</p>
+<ul>
+<li>命令行交互界面</li>
+<li>number</li>
+<li>string</li>
+</ul>
+<p>为了更深入学习和理解python,大家可以自行阅读python手册,手册通常位于python目录</p>
+<p>比如我的在 D:\codeLang\Python36\Doc\python361.chm</p>
+<p>双击打开即可</p>
+<p>也可以通过开始菜单打开手册<br><img src="http://upload-images.jianshu.io/upload_images/4830879-e6bcba0aa4e9d53d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="20170404171622.png"></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/04/04/pythonGuide-dataScience-1/">第一次运行python程序,从命令行交互开始</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">MonkeyHi</a></p>
+        <p><span>发布时间:</span>2017-04-04, 00:10:27</p>
+        <p><span>最后更新:</span>2017-04-05, 15:29:09</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/04/pythonGuide-dataScience-1/" title="第一次运行python程序,从命令行交互开始">https://MonkeyHi.github.io/2017/04/04/pythonGuide-dataScience-1/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://MonkeyHi.github.io/2017/04/04/pythonGuide-dataScience-1/　　作者: MonkeyHi" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/04/04/pythonGuide-dataScience-2/">
+                    怎么运行python文件
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/04/03/pythonGuide-dataScience-0/">
+                    简单认识python
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python从零开始系列"><span class="toc-number">1.</span> <span class="toc-text">Python从零开始系列</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#交互式界面"><span class="toc-number">1.1.</span> <span class="toc-text">交互式界面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#理解命令行交互界面"><span class="toc-number">1.1.1.</span> <span class="toc-text">理解命令行交互界面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#进入python的交互界面"><span class="toc-number">1.1.2.</span> <span class="toc-text">进入python的交互界面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#退出python的命令行交互界面"><span class="toc-number">1.1.3.</span> <span class="toc-text">退出python的命令行交互界面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#入门必学”hello-Python-world”"><span class="toc-number">1.1.4.</span> <span class="toc-text">入门必学”hello,Python world”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#计算器-number"><span class="toc-number">1.1.5.</span> <span class="toc-text">计算器,number</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#尝试字符串操作"><span class="toc-number">1.1.6.</span> <span class="toc-text">尝试字符串操作</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"第一次运行python程序,从命令行交互开始　| MonkeyHi　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/04/04/pythonGuide-dataScience-2/" title="上一篇: 怎么运行python文件">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/04/03/pythonGuide-dataScience-0/" title="下一篇: 简单认识python">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/01/10/continuous-intergration-java/">springboot借助coding.net持续集成和持续部署</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/10/cicdbase/">持续集成</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/29/ubuntu1604upgradekernel/">ubuntu1604升级内核，开启BBR</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/07/vscode-nunjucks-snippets/">vscode-nunjucks-snippets</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/pythonGuide-dataScience-2/">怎么运行python文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/pythonGuide-dataScience-1/">第一次运行python程序,从命令行交互开始</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/03/pythonGuide-dataScience-0/">简单认识python</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/01/powershell-guid-0/">修改powershell脚本可执行权限</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/04/21/hello-world/">Hello World 第一个post</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2019 MonkeyHi
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

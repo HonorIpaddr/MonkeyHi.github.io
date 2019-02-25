@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+    
+    <entry>
+      <title><![CDATA[springboot借助coding.net持续集成和持续部署]]></title>
+      <url>https://MonkeyHi.github.io/2019/01/10/continuous-intergration-java/</url>
+      <content type="html"><![CDATA[<p>这篇，我们借助 e.coding.net（腾讯开发平台）的 持续集成功能，实现springboot 从编码到最后的部署。<br>本质上讲，e.coding.net 的持续集成功能也是基于jenkins。所以，会jenkins的大佬请忽略本文。<br><a id="more"></a></p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><h3 id="在线上环境构建、测试、部署"><a href="#在线上环境构建、测试、部署" class="headerlink" title="在线上环境构建、测试、部署"></a>在线上环境构建、测试、部署</h3><p>这种情况，通常会将jenkins等安装在线上服务器，确保构建测试等操作环境和线上环境一致。</p>
+<p>通常会在jenkins中配置好需要持续集成的仓库，以及具体流程。</p>
+<p>这种方式非常简单粗暴，也非常有效，但是缺点也很明显。可能jenkins会成为线上环境的旁站漏洞。</p>
+<p>那么，我们就需要更高级的方式，可以线上环境之外的构建测试，最终部署到线上环境。e.coding.net正是提供这类持续集成模式的平台。</p>
+<h3 id="不在实际部署服务器上构建、测试"><a href="#不在实际部署服务器上构建、测试" class="headerlink" title="不在实际部署服务器上构建、测试"></a>不在实际部署服务器上构建、测试</h3><p>为了避免占用线上服务器的资源，也为了避免安全问题，我们可以使用单独的jenkins(或者其它此类软件)完成构建、测试、分发，实际部署通过单独的webhook实现。这样可就可以避免在线上环境安装Jenkins，还可以避免更复杂的系统安全维护。</p>
+<p>这样做的优点：不会影响在线服务；<br>缺点： 被部署机器，最好是可以公网访问的，否则会无法完成后续分发步骤。</p>
+<h3 id="捋一下思路"><a href="#捋一下思路" class="headerlink" title="捋一下思路"></a>捋一下思路</h3><p>我们这次实战针对后一种思路</p>
+<ol>
+<li>检出代码</li>
+<li>构建</li>
+<li>测试</li>
+<li>分发</li>
+<li>触发部署</li>
+</ol>
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><h3 id="实际体验，还是很不错的。"><a href="#实际体验，还是很不错的。" class="headerlink" title="实际体验，还是很不错的。"></a>实际体验，还是很不错的。</h3><h3 id="step1-初始化一个持续集成"><a href="#step1-初始化一个持续集成" class="headerlink" title="step1. 初始化一个持续集成"></a>step1. 初始化一个持续集成</h3><ol>
+<li><p>首先,我们需要进入准备持续集成的项目。</p>
+<p>这里我用<a href="https://start.spring.io" target="_blank" rel="external">start.spring.io</a>初始化一个demo，并推送到仓库.<br> <img src="continuous-intergration-java/20190117124850.png" alt=""></p>
+</li>
+</ol>
+<ol>
+<li><p>解压demo项目，进入demo目录，初始化仓库</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cd g:\demo\</div><div class="line">git init</div><div class="line">git set remote giturl</div><div class="line">git add ./</div><div class="line">git commit -m &apos;init repo&apos;</div><div class="line">git push -u origin master</div></pre></td></tr></table></figure>
+<p> 别忘了<figure class="highlight plain"><figcaption><span>config user.name yourname``` 和  ```git config user.email youremail```</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">  3. 开始体验</div><div class="line">      仓库准备好后，就可以开始体验e.coding.net的持续集成功能</div><div class="line">      ![](continuous-intergration-java/20190117125156.png)</div><div class="line"></div><div class="line">      第一次的使用，需要先创建一个Jenkinsfile，很多小伙伴会说，第一次用，不知道是啥。</div><div class="line"></div><div class="line">      没关系，e.coding.net已经给我们准备好了模板，非常容易理解，可以认为是特定格式语法写一套task流程。</div><div class="line"></div><div class="line">      点击一下 “简易模板”，更具实际情况修改一下就可以</div><div class="line">      ![](continuous-intergration-java/20190117125512.png)</div><div class="line"></div><div class="line">      </div><div class="line">### step2. 编写Jenkinsfile</div><div class="line">为了方便理解，我们从简易模板开始，分别修改对应阶段的任务。</div><div class="line"></div><div class="line">1. 配置构建环境，e.coding.net 目前支持 java-8,python-3.5,ruby-2.3,go-1.11等</div><div class="line"></div><div class="line">    在Jenkinsfile的pipeline里添加:</div></pre></td></tr></table></figure></p>
+<p>agent {<br> // 此处设定构建环境，目前可选有<br> // default, java-8, python-3.5, ruby-2.3, go-1.11 等<br> // 详情请阅 <a href="https://dev.tencent.com/help/knowledge-base/how-to-use-ci#agents" target="_blank" rel="external">https://dev.tencent.com/help/knowledge-base/how-to-use-ci#agents</a><br> label “java-8”<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">2. 检出</div><div class="line"></div><div class="line">    这里不得不说，e.coding.net这里做的还是很方便的，提供了模板。默认简易模板是带有检出部分的，我们可以根据实际情况进行修改。 默认情况下，env.GIT_BUILD_REF 的值就是master，实际上我们可以定制为其它专门用于构建发的分支。</div><div class="line">    这里，大家可以自己修改具体要检出的分支。</div></pre></td></tr></table></figure>
+<p>stage(“检出”) {<br> steps {</p>
+<pre><code>sh &apos;ci-init&apos;
+checkout(
+  [$class: &apos;GitSCM&apos;, branches: [[name: env.GIT_BUILD_REF]], 
+  userRemoteConfigs: [[url: env.GIT_REPO_URL]]]
+)
+</code></pre><p> }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">3. 构建</div></pre></td></tr></table></figure>
+<p>stage(“构建”) {<br> steps {<br>   echo “构建中…”<br>   sh ‘java -version’<br>   sh ‘mvn package’<br>   echo “构建完成.”<br>   archiveArtifacts artifacts: ‘<em>*/target/</em>.jar’, fingerprint: true // 收集构建产物<br> }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">这里需要注意，springboot 的pom中需要添加一个插件</div><div class="line"></div><div class="line">修改后</div></pre></td></tr></table></figure>
+<p><plugins><br> <plugin><br>   <groupid>org.springframework.boot</groupid><br>   <artifactid>spring-boot-maven-plugin</artifactid><br> </plugin></plugins></p>
+ <!-- 下面是添加的插件 -->
+<p> <plugin><br>   <groupid>org.apache.maven.plugins</groupid><br>   <artifactid>maven-surefire-plugin</artifactid><br>   <version>2.6</version><br>   <configuration><br>   <skiptests>true</skiptests><br>   </configuration><br> </plugin><br></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">4. 测试</div><div class="line"></div><div class="line">    这里我偷个懒，只做了单元测试，</div><div class="line">    没有提取测试报告，大家可以根据实际项目定制这个流程。</div></pre></td></tr></table></figure>
+<p>stage(“测试”) {<br> steps {</p>
+<pre><code>echo &quot;单元测试中...&quot;
+sh &apos;mvn test&apos;
+echo &quot;单元测试完成.&quot;
+//junit &apos;target/surefire-reports/*.xml&apos; // 收集单元测试报告的调用过程
+</code></pre><p> }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">5. 分发jar包到目标服务器</div><div class="line"></div><div class="line">    这里比较无奈，我没有单独针对这次演示写部署jar包和上传jar包的webhookApi，但是构建好的jar包需要要放置到待部署的服务器。</div><div class="line">    </div><div class="line">    于是有了这个过程，借助**scp**和**私钥**来上传构建好的jar包。</div><div class="line"></div><div class="line">    这里千万记着提前部署好密钥。并且将密钥放到仓库一份，用于分发jar包。</div></pre></td></tr></table></figure>
+<p>stage(“分发jar包”) {<br> steps {<br>   echo “分发中…”<br>   echo “chmod 600 pkey”<br>   sh ‘chmod 600 authorized_keys.pem’<br>   echo “upload”<br>   sh ‘scp -i authorized_keys.pem ./target/*.jar root@yourip:/root/‘<br>   echo “准备部署”<br> }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">6. 部署</div><div class="line"></div><div class="line">    前面 提到，这里部署仍然需要触发一个钩子，否则只能手动部署了。</div><div class="line">    这里我写了一个最简单的，实际上我们可以写细致一点，判断一下接口返回的结果再根据结果输出部署情况。</div></pre></td></tr></table></figure>
+<p>stage(“部署”) {<br> steps {<br>   sh ‘curl <a href="http://youapi" target="_blank" rel="external">http://youapi</a>‘<br>   echo “部署完毕”<br> }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">##### 保存Jenkinsfile </div><div class="line">修改好Jenkinsfile和pom.xml</div><div class="line"></div><div class="line">我们要保存jenkinsfile，编辑框可以直接编辑内容，编辑好可以直接提交到仓库下的./Jenkinsfile</div><div class="line"></div><div class="line">![](continuous-intergration-java/20190117125841.png)</div><div class="line"></div><div class="line">接下来， 平台会自动读取Jenkinsfile并开始走持续集成的流程</div><div class="line"></div><div class="line"></div><div class="line">![](continuous-intergration-java/2019_1_16 9_19_56.png)</div><div class="line"></div><div class="line">持续集成的流程是可以看到的</div><div class="line">![](continuous-intergration-java/20190117134140.png)</div><div class="line"></div><div class="line">每个阶段都对应Jenkinsfile一个stage， 我们可以点击查看对应阶段的构建结果</div><div class="line">下面一起看看如何编写Jenkinsfile</div><div class="line"></div><div class="line">如果某个过程出错，持续集成的流程会停止，并提示失败。此时我们可以进入查看具体失败原因。</div><div class="line">![](continuous-intergration-java/20190117134829.png)</div><div class="line">比如 我们看一下分发jar包失败的,我们可以看看具体分发失败原因。</div><div class="line">![](continuous-intergration-java/20190117134800.png)</div><div class="line"></div><div class="line">可以看到，报错原因是我没有填写正确的主机ip</div><div class="line">## 文中涉及的文件及代码</div><div class="line">### Jenkinsfile</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>pipeline {<br>    agent {<br>        // 此处设定构建环境，目前可选有<br>        // default, java-8, python-3.5, ruby-2.3, go-1.11 等<br>        // 详情请阅 <a href="https://dev.tencent.com/help/knowledge-base/how-to-use-ci#agents" target="_blank" rel="external">https://dev.tencent.com/help/knowledge-base/how-to-use-ci#agents</a><br>        label “java-8”<br>    }<br>    stages  {<br>        // 检出仓库<br>        stage(“检出”) {<br>            steps {<br>                // 这里sh调用ci-init 初始化<br>                sh ‘ci-init’<br>                // 这里检出仓库，默认检出分支为环境变量中的GIT_BUILD_REF<br>                checkout(<br>                  [$class: ‘GitSCM’, branches: [[name: env.GIT_BUILD_REF]],<br>                  userRemoteConfigs: [[url: env.GIT_REPO_URL]]]<br>                )<br>            }<br>        }<br>        // 构建jar包<br>        stage(“构建”) {<br>            steps {<br>                echo “构建中…”<br>                // 输出java版本<br>                sh ‘java -version’<br>                // 调用maven 构建jar包<br>                sh ‘mvn package’<br>                echo “构建完成.”<br>                //收集构建产物，这一步成功，我们就可以在平台上看到构建产物<br>                archiveArtifacts artifacts: ‘<em>*/target/</em>.jar’, fingerprint: true // 收集构建产物<br>            }<br>        }<br>        // 测试<br>        stage(“测试”) {<br>            steps {<br>                echo “单元测试中…”<br>                // 做单元测试<br>                sh ‘mvn test’<br>                echo “单元测试完成.”<br>            }<br>        }<br>        // 分发jar包，这里只是简单的通过scp分发jar包到目标机器指定目录<br>        stage(“分发jar包”) {<br>            steps {<br>                echo “分发中…”<br>                echo “chmod 600 pkey”<br>                sh ‘chmod 600 authorized_keys.pem’<br>                echo “upload”<br>                  sh ‘scp -i authorized_keys.pem ./target/*.jar root@youip:/root/‘<br>                echo “准备部署”<br>            }<br>        }<br>        // 部署jar包<br>        stage(“部署”) {<br>            // 这里需要触发一个部署的webhook，可以是一个很简单的重启java进程的操作<br>            steps {<br>                // 用curl 来触发hook<br>                sh ‘curl <a href="http://baidu.com" target="_blank" rel="external">http://baidu.com</a>‘<br>                echo “请登录服务器手动部署”<br>            }<br>        }<br>    }<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">### pom.xml</div><div class="line">文中所用springboot demo的pom.xml</div><div class="line"></div><div class="line">实际上，大家可以直接去 start.spingboot.io 参考照这份pom来创建一个demo</div></pre></td></tr></table></figure></p>
+<p>&lt;?xml version=”1.0” encoding=”UTF-8”?&gt;</p>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"><br>    <modelversion>4.0.0</modelversion><br>    <parent><br>        <groupid>org.springframework.boot</groupid><br>        <artifactid>spring-boot-starter-parent</artifactid><br>        <version>2.1.2.RELEASE</version><br>        <relativepath> <!-- lookup parent from repository --><br>    </relativepath></parent><br>    <groupid>tech.hejian</groupid><br>    <artifactid>codingj8</artifactid><br>    <version>0.0.1-SNAPSHOT</version><br>    <name>codingj8</name><br>    <description>coding project for Spring Boot</description><br><br>    <properties><br>        <java.version>1.8</java.version><br>    </properties><br><br>    <dependencies><br>        <dependency><br>            <groupid>org.springframework.boot</groupid><br>            <artifactid>spring-boot-starter-web</artifactid><br>        </dependency><br><br>        <dependency><br>            <groupid>org.springframework.boot</groupid><br>            <artifactid>spring-boot-devtools</artifactid><br>            <scope>runtime</scope><br>        </dependency><br>        <dependency><br>            <groupid>org.springframework.boot</groupid><br>            <artifactid>spring-boot-starter-test</artifactid><br>            <scope>test</scope><br>        </dependency><br>    </dependencies><br><br>    <build><br>        <plugins><br>            <plugin><br>                <groupid>org.springframework.boot</groupid><br>                <artifactid>spring-boot-maven-plugin</artifactid><br>            </plugin><br>            <plugin><br>                <groupid>org.apache.maven.plugins</groupid><br>                <artifactid>maven-surefire-plugin</artifactid><br>                <version>2.6</version><br>                <configuration><br>                <skiptests>true</skiptests><br>                </configuration><br>            </plugin><br>        </plugins><br><br><br>    </build><br><br></project>
+
+<p>```</p>
+]]></content>
+      
+        <categories>
+            
+            <category> springboot </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> springboot </tag>
+            
+            <tag> continuous-intergration-java </tag>
+            
+            <tag> continuous-deployment </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[持续集成]]></title>
+      <url>https://MonkeyHi.github.io/2019/01/10/cicdbase/</url>
+      <content type="html"><![CDATA[<h2 id="持续集成-？——？"><a href="#持续集成-？——？" class="headerlink" title="持续集成 ？——？"></a>持续集成 ？——？</h2><p>大概数周前，突然有学长问我有没有接触过“<strong>持续集成</strong>”。</p>
+<p>在我脑海中，这是一个陌生的词汇，于是百度了解了一番。实际上有开发和部署经验的小伙伴对持续集成不会非常陌生的，特别是那些喜欢自己写webhook的小伙伴。这篇文章来聊聊<strong>持续集成</strong>。</p>
+<p>互联网软件从开发到上线，后续迭代更新，已经有一套近乎标准的流程。其中 <strong>持续集成</strong>（Continuous integration，简称CI）则是核心流程。</p>
+<p><img src="cicdbase/timg.jpg" alt="tuyi"></p>
+<a id="more"></a>
+<h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><blockquote>
+<p>大师Martin Fowler对持续集成是这样定义的:持续集成是一种软件开发实践，即团队开发成员经常集成他们的工作，通常每个成员每天至少集成一次，也就意味着每天可能会发生多次集成。每次集成都通过自动化的构建（包括编译，发布，自动化测试)来验证，从而尽快地发现集成错误。许多团队发现这个过程可以大大减少集成的问题，让团队能够更快的开发内聚的软件。</p>
+</blockquote>
+<p>简单说，持续集成就是指频繁自动将代码集成到主干和生产环境。</p>
+<h3 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h3><p>持续集成的目的，快速迭代，保持高质量，避免不必要的成本投入。</p>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ol>
+<li>快速定位错误，测试环节可以及时暴露问题；</li>
+<li>避免大幅度偏离主干，借助统一的代码库；</li>
+<li>减少不必要的成本投入，可以自动化解决的重复乏味的事情，没必要浪费人力和时间；</li>
+<li>实际上还有很多有点，大家慢慢感受啦~<h3 id="一般步骤"><a href="#一般步骤" class="headerlink" title="一般步骤"></a>一般步骤</h3>持续集成的核心措施, 集成到主干前, 自动化测试, 只有通过,才可以集成到主干。</li>
+</ol>
+<p>成功集成到主干后,也意味着可以部署上线。<br>这便牵扯出另外两个相关概念，持续交付、持续部署。<br><img src="cicdbase/pic1.png" alt="pic1.png"><br>这里一起看一下集成的一般步骤：</p>
+<ol>
+<li>设计</li>
+<li>开发</li>
+<li>测试</li>
+<li>发布</li>
+</ol>
+<p>每次集成都是这样的步骤，因此持续集成会时这些基本步骤合体的循环，只要项目还在迭代，我们就会不停重复这个步骤。</p>
+<h3 id="持续交付-（Continuous-delivery）"><a href="#持续交付-（Continuous-delivery）" class="headerlink" title="持续交付 （Continuous delivery）"></a>持续交付 （Continuous delivery）</h3><p>这里借用阮一峰老师的说法：</p>
+<blockquote>
+<p>持续交付（Continuous delivery）指的是，频繁地将软件的新版本，交付给质量团队或者用户，以供评审。如果评审通过，代码就进入生产阶段。<br>持续交付可以看作持续集成的下一步。它强调的是，不管怎么更新，软件是随时随地可以交付的。</p>
+<p>注意，持续交付在自动化测试和集成结束后，不一定会自动部署。如果有自动部署，则是持续部署的概念了。</p>
+<h3 id="持续部署-（continuous-deployment）"><a href="#持续部署-（continuous-deployment）" class="headerlink" title="持续部署 （continuous deployment）"></a>持续部署 （continuous deployment）</h3><p>持续部署（continuous deployment）则是持续交付的下一步，代码通过评审，自动化部署到生产环境。</p>
+</blockquote>
+<p>其目的时可以随时部署，迅速投入生产阶段。</p>
+<p>持续部署这一步，意味着产品和观众见面，但是要通过重重考验，测试、构建、部署等步骤，而且每一步都是自动的。</p>
+<h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p>通常如下几步：</p>
+<h4 id="1-提交"><a href="#1-提交" class="headerlink" title="1. 提交"></a>1. 提交</h4><p>就是常见的代码提交到仓库</p>
+<h4 id="2-单元测试"><a href="#2-单元测试" class="headerlink" title="2. 单元测试"></a>2. 单元测试</h4><p>这个过程 通常是一个针对commit操作的钩子，只要由提交，就会跑自动化测试，测试通过才可以推代码到主干。（这轮测试至少要有单元测试）</p>
+<p>常见测试：</p>
+<ul>
+<li>单元测试：针对函数或模块的测试</li>
+<li>集成测试：针对整体产品的某个功能的测试，也叫功能测试</li>
+<li>端对端测试：从用户界面直达数据库的全链路测试</li>
+</ul>
+<h4 id="3-构建"><a href="#3-构建" class="headerlink" title="3. 构建"></a>3. 构建</h4><p>第一轮测试通过，代码可以成功合并到主干，交付。</p>
+<p>那么接下来，就要构建（build），进入第二轮测试。</p>
+<p>但是，构建并不是绝对必须的过程，构建就是为了让源码变成可以运行的程序或代码。如果是java、golang项目，通常要build后才可以运行。但如果是php、python，可能并没有构建过程，只要更新代码到对应的cgi容器的工程目录就可以了。</p>
+<p>构建过程，我们可以自己写一些脚本和接口，挂到对应的钩子里。当然，也可以用一些成熟的构建工具：</p>
+<ul>
+<li>jenkins    （开源免费）</li>
+<li>Travis </li>
+<li>codeship  （开源免费）</li>
+<li>Strider<h4 id="4-全面测试"><a href="#4-全面测试" class="headerlink" title="4. 全面测试"></a>4. 全面测试</h4>这轮测试 ，应该是一次全面测试，除了前面提到的自动化测试，还应该包含一些无法自动化测试的部分。如果第一轮测试已经很全面（意味着前一步和第一轮测试合并了，不构建，自然无法全面测试），那么这轮测试可以作为第一轮测试的补集存在。</li>
+</ul>
+<p>这里需要注意的是，测试的覆盖率。每次版本更新，更新点都应测试到位</p>
+<h3 id="要素"><a href="#要素" class="headerlink" title="要素"></a>要素</h3><ol>
+<li>统一的代码库</li>
+<li>自动构建</li>
+<li>自动测试</li>
+<li>每个人每天都要向代码库主干提交代码</li>
+<li>每次代码递交后都会在持续集成服务器上触发一次构建</li>
+<li>保证快速构建</li>
+<li>模拟生产环境的自动测试</li>
+<li>每个人都可以很容易的获取最新可执行的应用程序</li>
+<li>每个人都清楚正在发生的状况</li>
+<li>自动化的部署 </li>
+</ol>
+<h3 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h3><ol>
+<li>所有的开发人员需要在本地机器上做本地构建，然后再提交的版本控制库中，从而确保他们的变更不会导致持续集成失败。</li>
+<li>开发人员每天至少向版本控制库中提交一次代码。</li>
+<li>开发人员每天至少需要从版本控制库中更新一次代码到本地机器。</li>
+<li>需要有专门的集成服务器来执行集成构建,每天要执行多次构建。</li>
+<li>每次构建都要100%通过。</li>
+<li>每次构建都可以生成可发布的产品。</li>
+<li>修复失败的构建是优先级最高的事情。</li>
+<li>测试是未来，未来是测试 </li>
+</ol>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>从开发到上线，整体流程：</p>
+<p>持续集成——&gt;持续交付——&gt;持续部署</p>
+<p><img src="cicdbase/img2.png" alt="img2.png"></p>
+<h3 id="Jenkins和持续集成什么关系"><a href="#Jenkins和持续集成什么关系" class="headerlink" title="Jenkins和持续集成什么关系"></a>Jenkins和持续集成什么关系</h3><p>Jenkins是一个开源软件项目，是基于Java开发的一种持续集成工具，用于监控持续重复的工作，旨在提供一个开放易用的软件平台，使软件的持续集成变成可能。</p>
+<p>没错，它就是一个具体的持续集成解决方案。基于java实现。<br>可以实现：</p>
+<ol>
+<li>持续版本发布/测试；</li>
+<li>监控外部调用执行的工作；</li>
+</ol>
+<h2 id="持续集成和webhook什么关系"><a href="#持续集成和webhook什么关系" class="headerlink" title="持续集成和webhook什么关系"></a>持续集成和webhook什么关系</h2><p>说到这里，一些有php开发经验的小伙伴很容易联想到写webhook。</p>
+<p>没错，php程序通常由Http Server（比如apache2、nginx等）通过反响代理fpm-cgi或者直接内置cgi来执行php程序。这个过程更像是直接请求了html文档。说这里是因为，一些php 写手为了方便更新线上代码，并不想每次都手动scp命令上传新的代码，特别时有时候有些代码可能是有问题的。这时候，大家都想到用版本管理，git就是很好的选在，其中github和coding都是不错的选择。</p>
+<p>我们的话题是持续集成，为什么会突然扯到php和git呢？</p>
+<p>那是因为，github和coding很早就都支持了webhook功能。换句话说，我们可以通过开放一个特别的接口，这个接口就一个功能，执行一系列操作，每当接口被调用时，接口可以执行我们预设好的一系列任务指令。这样，我们每次写好代码，只要push到仓库，触发webhook，github等平台就会去请求我们开放的接口，用来执行更新代码和重启服务等操作。</p>
+<p>简单说，我们给服务器上留了一个“小工”，指派给他一个接头人，接到信号就做预先安排好的事儿。</p>
+<p>这个过程，是不是很像持续部署最后自动部署的阶段？</p>
+<p>没错，就是这样，这个过程很可能时没有自动测试环节，直接自动交付，自动部署。</p>
+<p>当然，如果webhook写复杂点，完全可以配合一些脚本命令做自己的一套CI\CD。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> base </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ci </tag>
+            
+            <tag> cd </tag>
+            
+            <tag> 持续集成 </tag>
+            
+            <tag> 持续部署 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[ubuntu1604升级内核，开启BBR]]></title>
+      <url>https://MonkeyHi.github.io/2017/04/29/ubuntu1604upgradekernel/</url>
+      <content type="html"><![CDATA[<p>BBR 目的是要尽量跑满带宽, 并且尽量不要有排队的情况, 效果并不比速锐差<br>Linux kernel 4.9+ 已支持 tcp_bbr 下面简单讲述基于KVM架构VPS如何开启<br><a id="more"></a></p>
+<h2 id="操作环境"><a href="#操作环境" class="headerlink" title="操作环境"></a>操作环境</h2><ul>
+<li>Ubuntu 16.04.2 LTS 64位</li>
+<li>aliyun ECS</li>
+</ul>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><h3 id="更新系统"><a href="#更新系统" class="headerlink" title="更新系统"></a>更新系统</h3>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt update</div><div class="line">apt upgrade</div></pre></td></tr></table></figure>
+<p>###<br> 查看当前内核版本<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">uname -a</div></pre></td></tr></table></figure></p>
+<p>  发现版本低于4.9</p>
+<h2 id="安装新内核"><a href="#安装新内核" class="headerlink" title="安装新内核"></a>安装新内核</h2>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt install linux-image-4.10.0-20</div><div class="line">apt install linux-image-4.10.0-20-generic</div></pre></td></tr></table></figure>
+<h2 id="卸载旧内核"><a href="#卸载旧内核" class="headerlink" title="卸载旧内核"></a>卸载旧内核</h2>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt autoremove</div></pre></td></tr></table></figure>
+<h2 id="启用新内核"><a href="#启用新内核" class="headerlink" title="启用新内核"></a>启用新内核</h2>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">update-grub</div><div class="line">reboot</div></pre></td></tr></table></figure>
+<h2 id="验证内核版本"><a href="#验证内核版本" class="headerlink" title="验证内核版本"></a>验证内核版本</h2>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">uname -r</div><div class="line">#看到如下类似如下回显，版本号为4.10.0-20-generic</div><div class="line">4.10.0-20-generic</div></pre></td></tr></table></figure>
+<h2 id="启用BBR"><a href="#启用BBR" class="headerlink" title="启用BBR"></a>启用BBR</h2><ol>
+<li><p>写入配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">echo &quot;net.core.default_qdisc=fq&quot; &gt;&gt; /etc/sysctl.conf</div><div class="line">echo &quot;net.ipv4.tcp_congestion_control=bbr&quot; &gt;&gt; /etc/sysctl.conf</div></pre></td></tr></table></figure>
+</li>
+<li><p>配置生效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sysctl -p</div></pre></td></tr></table></figure>
+</li>
+<li><p>检验</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">lsmod | grep bbr</div></pre></td></tr></table></figure>
+<p>看到回显</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tcp_bbr                20480  0</div></pre></td></tr></table></figure>
+<p>说明已经成功开启BBR</p>
+</li>
+</ol>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> BBR </tag>
+            
+            <tag> linux </tag>
+            
+            <tag> ubuntu </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[vscode-nunjucks-snippets]]></title>
+      <url>https://MonkeyHi.github.io/2017/04/07/vscode-nunjucks-snippets/</url>
+      <content type="html"><![CDATA[<p>平时写代码，总习惯用vi或者vscode。无奈vscode的nunjucks插件只有高亮，没有补全功能。干脆自己加上呗。vscode还是很容易定制 自己的代码片段的。<br><a id="more"></a></p>
+<p># </p>
+<h2 id="新建用户代码片段"><a href="#新建用户代码片段" class="headerlink" title="新建用户代码片段"></a>新建用户代码片段</h2><p>文件(F)–&gt;首选项(P)–&gt;用户代码片段(S)<br>img<br>输入”nunjucks”,选择”Nunjucks”,打开nunjucks.json文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	/*</div><div class="line">		// Place your snippets for Nunjucks here. Each snippet is defined under a snippet name and has a prefix, body and </div><div class="line">		// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:</div><div class="line">		// $1, $2 for tab stops, $0 for the final cursor position, and $&#123;1:label&#125;, $&#123;2:another&#125; for placeholders. Placeholders with the </div><div class="line">		// same ids are connected.</div><div class="line">		// Example:</div><div class="line">		&quot;Print to console&quot;: &#123;</div><div class="line">			&quot;prefix&quot;: &quot;log&quot;,</div><div class="line">			&quot;body&quot;: [</div><div class="line">				&quot;console.log(&apos;$1&apos;);&quot;,</div><div class="line">				&quot;$2&quot;</div><div class="line">			],</div><div class="line">			&quot;description&quot;: &quot;Log output to console&quot;</div><div class="line">		&#125;</div><div class="line">	*/</div></pre></td></tr></table></figure></p>
+<h2 id="写入自定义的snippets"><a href="#写入自定义的snippets" class="headerlink" title="写入自定义的snippets"></a>写入自定义的snippets</h2><h3 id="找参考"><a href="#找参考" class="headerlink" title="找参考"></a>找参考</h3><p>对于没有自定义snippets经验且不是很熟悉nunjucks的情况，完全自编显然不合适，此时我们应该参考现有的snippets和其它编辑器的snippets。<br>img<br>在nunjucks官网发现有针对atom的自动补全插件。于是上github看看其snippets。<br>urlgithubof<br><a href="https://github.com/alohaas/language-nunjucks/blob/master/snippets/atom-nunjucks.cson" target="_blank" rel="external">https://github.com/alohaas/language-nunjucks/blob/master/snippets/atom-nunjucks.cson</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">&apos;.source.nunjucks, .text.html.nunjucks&apos;:</div><div class="line">  &apos;Block&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;block&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% block $&#123;1:name&#125; %&#125;\n\t$2\n&#123;% endblock %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;block defines a section on the template and identifies it with a name. This is used by template inheritance. Base templates can specify blocks and child templates can override them with new content.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#block&apos;</div><div class="line">  &apos;Complete Block&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;&#123;%&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% $1 %&apos;</div><div class="line">    &apos;description&apos;: &apos;A nunjucks template block.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/&apos;</div><div class="line">  &apos;Complete Variable&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;&#123;&#123;&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;&#123; $&#123;1:variable&#125; &apos;</div><div class="line">    &apos;description&apos;: &apos;A variable looks up a value from the template context.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#variables&apos;</div><div class="line">  &apos;Extends&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;extends&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% extends &quot;$&#123;1:template&#125;&quot; %&#125;$2&apos;</div><div class="line">    &apos;description&apos;: &apos;extends is used to specify template inheritance. The specified template is used as a base template.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#extends&apos;</div><div class="line">  &apos;Include&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;include&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% include &quot;$&#123;1:template&#125;&quot; %&#125;$2&apos;</div><div class="line">    &apos;description&apos;: &apos;Include pulls in other templates in place.It\&apos;s useful when you need to share smaller chunks across several templates that already inherit other templates.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#include&apos;</div><div class="line">  &apos;Filter&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;filter&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% filter $&#123;1:filter&#125; %&#125;\n\t$2\n&#123;% endfilter %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;A filter block allows you to call a filter with the contents of the block. Instead passing a value with the | syntax, the render contents from the block will be passed.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#filter&apos;</div><div class="line">  &apos;For&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;for&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% for $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endfor %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;for iterates over arrays and dictionaries.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#for&apos;</div><div class="line">  &apos;asyncEach&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;asyncEach&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% asyncEach $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endeach %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;asyncEach is an asynchronous version of for. You only need this if you are using a custom template loader that is asynchronous; otherwise you will never need it. Async filters and extensions also need this, but internally loops are automatically converted into asyncEach if any async filters and extensions are used within the loop.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#asynceach&apos;</div><div class="line">  &apos;asyncAll&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;asyncAll&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% asyncAll $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endeach %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;asyncAll is similar to asyncEach, except it renders all the items in parallel, preserving the order of the items. This is only helpful if you are using asynchronous filters, extensions, or loaders. Otherwise you should never use this.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#asyncall&apos;</div><div class="line">  &apos;If&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;if&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% endif %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;if tests a condition and lets you selectively display content. It behaves exactly as javascript\&apos;s if behaves.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;If Else&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;ife&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% else %&#125;\n\t$3\n&#123;% endif %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;It creates the if else block.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;If Elif&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;ifel&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% elif $&#123;3:condition&#125; %&#125;\n\t$4\n&#123;% else %&#125;\n\t$5\n&#123;% endif %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;Alternate condition with the if block&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;Elif&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;elif&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% elif $&#123;1:condition&#125; %&#125;\n\t$2&apos;</div><div class="line">    &apos;description&apos;: &apos;Alternate condition in the if block&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;Else&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;else&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% else $&#123;1:condition&#125; %&#125;\n\t$2&apos;</div><div class="line">    &apos;description&apos;: &apos;Alternate condition in the if block&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;Set&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;set&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% set $&#123;1:var&#125; = $&#123;2:value&#125; %&#125;$3&apos;</div><div class="line">    &apos;description&apos;: &apos;set lets you create/modify a variable.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#set&apos;</div><div class="line">  &apos;Macro&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;macro&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% macro $&#123;1:name&#125;($&#123;2:args&#125;) %&#125;\n\t$3\n&#123;% endmacro %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;macro allows you to define reusable chunks of content. It is similar to a function in a programming language. &apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#macro&apos;</div><div class="line">  &apos;Import&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;import&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% import &quot;$&#123;1:template&#125;&quot; as $&#123;2:var&#125; %&#125;$3&apos;</div><div class="line">    &apos;description&apos;: &apos;import loads a different template and allows you to access its exported values. Macros and top-level assignments (done with set) are exported from templates, allowing you to access them in a different template.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#import&apos;</div><div class="line">  &apos;From Import&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;from&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% from &quot;$&#123;1:template&#125;&quot; import $&#123;2:macro&#125; as $&#123;3:var&#125; %&#125;$4&apos;</div><div class="line">    &apos;description&apos;: &apos;It imports specific values from a template into the current namespace.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#import&apos;</div><div class="line">  &apos;Raw&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;raw&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% raw %&#125;\n\t$1\n&#123;% endraw %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;If you want to output any of the special nunjucks tags like &#123;&#123;, you can use raw and anything inside of it will be output as plain text.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#raw&apos;</div><div class="line">  &apos;Call&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;get&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% call $&#123;1:macro&#125; %&#125;\n\t$2\n&#123;% endcall %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;A call block enables you to call a macro with all the text inside the tag. This is helpful if you want to pass a lot of content into a macro. The content is available inside the macro as caller().&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#call&apos;</div><div class="line">  &apos;Alt Variable&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;var&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;&#123; $&#123;1:var&#125; &#125;&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;A variable looks up a value from the template context. If you wanted to simply display a variable, you would do: &#123;&#123; username &#125;&#125;&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#variables&apos;</div><div class="line">  &apos;Super&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;super&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;&#123; super() &#125;&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;You can render the contents of the parent block inside a child block by calling super.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#super&apos;</div><div class="line">  # Expressions</div><div class="line">  &apos;Or&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;or&apos;</div><div class="line">    &apos;body&apos;: &apos;or&apos;</div><div class="line">    &apos;description&apos;: &apos;Logical or operator.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#logic&apos;</div><div class="line">  # # Filter blocks</div><div class="line">  &apos;Pipe&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;pipe&apos;</div><div class="line">    &apos;body&apos;: &apos;| $&#123;1:filter&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;You can pass filters from the variable directly e.g. &#123;&#123; foo | escape &#125;&#125;&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#filters&apos;</div><div class="line">  # This is a sample tag just in case someone wants to add more to it</div><div class="line">  # More Filters</div><div class="line">  # &apos;Name&apos;:</div><div class="line">  #   &apos;prefix&apos;: &apos;&apos;</div><div class="line">  #   &apos;body&apos;: &apos;&apos;</div><div class="line">  #   &apos;description&apos;: &apos;&apos;</div><div class="line">  #   &apos;descriptionMoreURL&apos;: &apos;&apos;</div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从上面代码可以看到，atom和vscode的snippets的写法有些区别，是否兼容也并不好说。出于某种懒惰心理，还是直改写成json格式吧。</p>
+<h3 id="比较"><a href="#比较" class="headerlink" title="比较"></a>比较</h3><p>仔细看nunjucks的json例子和cson中的写法，可以发现，只是格式不同。字段基本一致（额，暂且叫字段吧）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#atom cson 中的写法</div><div class="line">&apos;Name&apos;:</div><div class="line">  &apos;prefix&apos;: &apos;&apos;</div><div class="line">  &apos;body&apos;: &apos;&apos;</div><div class="line">  &apos;description&apos;: &apos;&apos;</div><div class="line">  &apos;descriptionMoreURL&apos;: &apos;&apos;</div><div class="line"># vscode 中的json</div><div class="line">  &quot;Name&quot;: &#123;</div><div class="line">    &quot;prefix&quot;: &quot;&quot;,</div><div class="line">    &quot;body&quot;: [</div><div class="line">          </div><div class="line">      ],</div><div class="line">    &quot;description&quot;: &quot;description of&quot;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="改写"><a href="#改写" class="headerlink" title="改写"></a>改写</h3><p>以block为例，我们一起先看看如何改写。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># 改写前</div><div class="line"></div><div class="line">&apos;Block&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;block&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% block $&#123;1:name&#125; %&#125;\n\t$2\n&#123;% endblock %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;block defines a section on the template and identifies it with a name. This is used by template inheritance. Base templates can specify blocks and child templates can override them with new content.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#block&apos;</div><div class="line"># 改写后</div><div class="line">  &quot;Block&quot;: &#123;</div><div class="line">    &quot;prefix&quot;: &quot;block&quot;,</div><div class="line">    &quot;body&quot;:&quot;&#123;% block $&#123;1:name&#125; %&#125;\n\t$2\n&#123;% endblock %&#125;&quot;</div><div class="line">    &quot;description&quot;: &quot;block defines a section on the template and identifies it with a name. This is used by template inheritance. Base templates can specify blocks and child templates can override them with new content.&quot;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>so easy,类似的方法，大家何以做很多自己的snippet，写在对应语言的json中就可以。但是，大家要注意一些细节，部分片段内包含的引号是需要转义的。</p>
+<h3 id="改好的-nunjuck用户代码片段"><a href="#改好的-nunjuck用户代码片段" class="headerlink" title="改好的 nunjuck用户代码片段"></a>改好的 nunjuck用户代码片段</h3><p>有能力的同学可以自行了解cson并写个cson2json<br>这里贴出我改写好的，如有错误，各路高手多多指教。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	/*</div><div class="line">		// Place your snippets for Nunjucks here. Each snippet is defined under a snippet name and has a prefix, body and </div><div class="line">		// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:</div><div class="line">		// $1, $2 for tab stops, $0 for the final cursor position, and $&#123;1:label&#125;, $&#123;2:another&#125; for placeholders. Placeholders with the </div><div class="line">		// same ids are connected.</div><div class="line">		// Example:</div><div class="line">		&quot;Print to console&quot;: &#123;</div><div class="line">			&quot;prefix&quot;: &quot;log&quot;,</div><div class="line">			&quot;body&quot;: [</div><div class="line">				&quot;console.log(&apos;$1&apos;);&quot;,</div><div class="line">				&quot;$2&quot;</div><div class="line">			],</div><div class="line">			&quot;description&quot;: &quot;Log output to console&quot;</div><div class="line">		&#125;</div><div class="line">	*/</div><div class="line">	&quot;Block&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;block&quot;,</div><div class="line">		&quot;body&quot;: [</div><div class="line">			&quot;&#123;% block $&#123;1:name&#125; %&#125;\n\t$2\n&#123;% endblock %&#125;&quot;</div><div class="line">		],</div><div class="line">		&quot;description&quot;: &quot;block defines a section on the template and identifies it with a name. This is used by template inheritance. Base templates can specify blocks and child templates can override them with new content.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Complete Block&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;njk&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% $1 %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A nunjucks template block.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Complete Variable&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;v&#123;&#125;&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;&#123; $&#123;1:variable&#125; &#125;&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A variable looks up a value from the template context.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Extends&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;extends&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% extends \&quot;$&#123;1:template&#125;\&quot; %&#125;$2&quot;,</div><div class="line">		&quot;description&quot;: &quot;extends is used to specify template inheritance. The specified template is used as a base template.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Include&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;include&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% include \&quot;$&#123;1:template&#125;\&quot; %&#125;$2&quot;,</div><div class="line">		&quot;description&quot;: &quot;Include pulls in other templates in place.It\&quot;s useful when you need to share smaller chunks across several templates that already inherit other templates.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Filter&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;filter&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% filter $&#123;1:filter&#125; %&#125;\n\t$2\n&#123;% endfilter %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A filter block allows you to call a filter with the contents of the block. Instead passing a value with the | syntax, the render contents from the block will be passed.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;For&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;for&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% for $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endfor %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;for iterates over arrays and dictionaries.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;asyncEach&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;asyncEach&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% asyncEach $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endeach %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;asyncEach is an asynchronous version of for. You only need this if you are using a custom template loader that is asynchronous; otherwise you will never need it. Async filters and extensions also need this, but internally loops are automatically converted into asyncEach if any async filters and extensions are used within the loop.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;asyncAll&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;asyncAll&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% asyncAll $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endeach %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;asyncAll is similar to asyncEach, except it renders all the items in parallel, preserving the order of the items. This is only helpful if you are using asynchronous filters, extensions, or loaders. Otherwise you should never use this.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;If&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;if&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% endif %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;if tests a condition and lets you selectively display content. It behaves exactly as javascript\&quot;s if behaves.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;If Else&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;ife&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% else %&#125;\n\t$3\n&#123;% endif %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;It creates the if else block.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;If Elif&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;ifel&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% elif $&#123;3:condition&#125; %&#125;\n\t$4\n&#123;% else %&#125;\n\t$5\n&#123;% endif %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;Alternate condition with the if block&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Elif&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;elif&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% elif $&#123;1:condition&#125; %&#125;\n\t$2&quot;,</div><div class="line">		&quot;description&quot;: &quot;Alternate condition in the if block&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;Else&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;else&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% else $&#123;1:condition&#125; %&#125;\n\t$2&quot;,</div><div class="line">		&quot;description&quot;: &quot;Alternate condition in the if block&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;Set&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;set&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% set $&#123;1:var&#125; = $&#123;2:value&#125; %&#125;$3&quot;,</div><div class="line">		&quot;description&quot;: &quot;set lets you create/modify a variable.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;Macro&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;macro&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% macro $&#123;1:name&#125;($&#123;2:args&#125;) %&#125;\n\t$3\n&#123;% endmacro %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;macro allows you to define reusable chunks of content. It is similar to a function in a programming language. &quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Import&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;import&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% import \&quot;$&#123;1:template&#125;\&quot; as $&#123;2:var&#125; %&#125;$3&quot;,</div><div class="line">		&quot;description&quot;: &quot;import loads a different template and allows you to access its exported values. Macros and top-level assignments (done with set) are exported from templates, allowing you to access them in a different template.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;From Import&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;from&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% from \&quot;$&#123;1:template&#125;\&quot; import $&#123;2:macro&#125; as $&#123;3:var&#125; %&#125;$4&quot;,</div><div class="line">		&quot;description&quot;: &quot;It imports specific values from a template into the current namespace.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;Raw&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;raw&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% raw %&#125;\n\t$1\n&#123;% endraw %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;If you want to output any of the special nunjucks tags like &#123;&#123;, you can use raw and anything inside of it will be output as plain text.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Call&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;call&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% call $&#123;1:macro&#125; %&#125;\n\t$2\n&#123;% endcall %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A call block enables you to call a macro with all the text inside the tag. This is helpful if you want to pass a lot of content into a macro. The content is available inside the macro as caller().&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Alt Variable&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;var&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;&#123; $&#123;1:var&#125; &#125;&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A variable looks up a value from the template context. If you wanted to simply display a variable, you would do: &#123;&#123; username &#125;&#125;&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Super&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;super&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;&#123; super() &#125;&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;You can render the contents of the parent block inside a child block by calling super.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Or&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;or&quot;,</div><div class="line">		&quot;body&quot;: &quot;or&quot;,</div><div class="line">		&quot;description&quot;: &quot;Logical or operator.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Pipe&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;pipe&quot;,</div><div class="line">		&quot;body&quot;: &quot;| $&#123;1:filter&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;You can pass filters from the variable directly e.g. &#123;&#123; foo | escape &#125;&#125;&quot;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+]]></content>
+      
+        <categories>
+            
+            <category> other </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> vscode </tag>
+            
+            <tag> nunjucks </tag>
+            
+            <tag> snippets </tag>
+            
+            <tag> thinkjs </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[怎么运行python文件]]></title>
+      <url>https://MonkeyHi.github.io/2017/04/04/pythonGuide-dataScience-2/</url>
+      <content type="html"><![CDATA[<p>前面一篇,大家学会了使用python 的交互式commandshell , 其实python 还可以直接用python的解释器来执行python文件。</p>
+<blockquote>
+<p>千里之行，始于足下^&amp;^</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Python从零开始系列"><a href="#Python从零开始系列" class="headerlink" title="Python从零开始系列"></a>Python从零开始系列</h1><h2 id="使用python自带的IDLE"><a href="#使用python自带的IDLE" class="headerlink" title="使用python自带的IDLE"></a>使用python自带的IDLE</h2><p>如图，找到python的IDLE,启动。</p>
+<p>启动后默认也是交互shell。</p>
+<p>但是仔细观察发现上面多了一个menu。看起来有点儿像一个编辑器。<br>其实我们可以通过这个IDLE来新建一个python文件，并且执行这个文件。</p>
+<h3 id="新建文件-New-File-Ctrl-N"><a href="#新建文件-New-File-Ctrl-N" class="headerlink" title="新建文件 New File ( Ctrl + N )"></a>新建文件 New File ( Ctrl + N )</h3><p>点击 File–&gt;New File (或者用快捷键 Ctrl + N )，新建一个python文件</p>
+<p>新建成功后，会弹出这样一个更像 记事本 的界面</p>
+<h3 id="一个-HelloForBeauty-py"><a href="#一个-HelloForBeauty-py" class="headerlink" title="一个 HelloForBeauty.py"></a>一个 HelloForBeauty.py</h3><p>我们在新建的文件里写入<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">name = input(&quot;请输入美女芳名：&quot;)</div><div class="line">print(name,&quot;是个超级惹人爱的美女哦&quot;)</div></pre></td></tr></table></figure></p>
+<p>写好后 ctrl + s 保存,选择</p>
+<p>第一行,使用input() function获取键盘输出的字符串,并且赋值给变量 name</p>
+<p>第二行,使用print() function 在屏幕中打印出 name 和后面的字符串”是个超级惹人爱的美女哦”</p>
+<blockquote>
+<p>tips: 千万注意,所有标点符号都是英文标点符（ps：不要随便调息身边的妹纸哦）</p>
+</blockquote>
+]]></content>
+      
+        <categories>
+            
+            <category> Python </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> Guides </tag>
+            
+            <tag> dataScience </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[第一次运行python程序,从命令行交互开始]]></title>
+      <url>https://MonkeyHi.github.io/2017/04/04/pythonGuide-dataScience-1/</url>
+      <content type="html"><![CDATA[<p>摘要：<br>从 交互式界面 开始</p>
+<ol>
+<li>进入界面</li>
+<li>计算器,number</li>
+<li>尝试变量赋值</li>
+<li>尝试字符串操作,string</li>
+</ol>
+<blockquote>
+<p>千里之行，始于足下^&amp;^</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Python从零开始系列"><a href="#Python从零开始系列" class="headerlink" title="Python从零开始系列"></a>Python从零开始系列</h1><h2 id="交互式界面"><a href="#交互式界面" class="headerlink" title="交互式界面"></a>交互式界面</h2><h3 id="理解命令行交互界面"><a href="#理解命令行交互界面" class="headerlink" title="理解命令行交互界面"></a>理解命令行交互界面</h3><p>python提供了一个命令行交互式界面。对于新手，可能一时半会儿难以理解 “交互界面”。为了便于理解，我们打个比方.比如cmd中，<br>我们运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ping www.baidu.com</div></pre></td></tr></table></figure></p>
+<p>接着会有回显<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">C:\Users\0xff007&gt;ping www.baidu.com</div><div class="line"></div><div class="line">正在 Ping www.a.shifen.com [111.13.100.92] 具有 32 字节的数据:</div><div class="line">来自 111.13.100.92 的回复: 字节=32 时间=15ms TTL=54</div><div class="line">来自 111.13.100.92 的回复: 字节=32 时间=14ms TTL=54</div><div class="line">来自 111.13.100.92 的回复: 字节=32 时间=15ms TTL=54</div><div class="line">来自 111.13.100.92 的回复: 字节=32 时间=14ms TTL=54</div><div class="line"></div><div class="line">111.13.100.92 的 Ping 统计信息:</div><div class="line">    数据包: 已发送 = 4，已接收 = 4，丢失 = 0 (0% 丢失)，</div><div class="line">往返行程的估计时间(以毫秒为单位):</div><div class="line">    最短 = 14ms，最长 = 15ms，平均 = 14ms</div><div class="line"></div><div class="line">C:\Users\0xff007&gt;</div></pre></td></tr></table></figure></p>
+<p>这种输入指令，回显结果就式一种命令行交互界面。</p>
+<h3 id="进入python的交互界面"><a href="#进入python的交互界面" class="headerlink" title="进入python的交互界面"></a>进入python的交互界面</h3><p>只要cmd里一个单词作为指令即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python</div></pre></td></tr></table></figure></p>
+<p>回车后得到界面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">C:\Users\0xff007&gt;python</div><div class="line">Python 3.6.1 (v3.6.1:69c0db5, Mar 21 2017, 18:41:36) [MSC v.1900 64 bit (AMD64)] on win32</div><div class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>我们的指令就在 “&gt;&gt;&gt;” 后输入</p>
+<h3 id="退出python的命令行交互界面"><a href="#退出python的命令行交互界面" class="headerlink" title="退出python的命令行交互界面"></a>退出python的命令行交互界面</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; exit()</div></pre></td></tr></table></figure>
+<h3 id="入门必学”hello-Python-world”"><a href="#入门必学”hello-Python-world”" class="headerlink" title="入门必学”hello,Python world”"></a>入门必学”hello,Python world”</h3><p>如下所示，只要使用print()函数，嵌入需要回显的字符串就好。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Python 3.6.1 (v3.6.1:69c0db5, Mar 21 2017, 18:41:36) [MSC v.1900 64 bit (AMD64)] on win32</div><div class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</div><div class="line">&gt;&gt;&gt; print(&quot;hello,Python world&quot;)</div><div class="line">hello,Python world</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>到这里，我们学会了简单的使用交互界面回显字符串。</p>
+<h3 id="计算器-number"><a href="#计算器-number" class="headerlink" title="计算器,number"></a>计算器,number</h3><p>python的命令行交互界面对于新手，最实惠的一个功能，可以当作计算器。<br>在命令行交互界面中，我们可以直接输入运算符连接数字的表达式来做运算，这听起来是不是很像小时候玩过的计算器。</p>
+<p>下面大家一起来看一些例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; 2+6 # 2+6 结果 8</div><div class="line">8</div><div class="line">&gt;&gt;&gt; 2*6 # 2乘以6 结果12</div><div class="line">12</div><div class="line">&gt;&gt;&gt; 6-2</div><div class="line">4</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>注意，上面 表达式 2+6 后面#号 是注释符，其后所更内容是注释，我这里添加注释是为了方便大家理解。<br>更多例子<br>乘方<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; 2**10</div><div class="line">1024</div></pre></td></tr></table></figure></p>
+</blockquote>
+<p>除法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; 17//3</div><div class="line">5</div><div class="line">&gt;&gt;&gt; 17/3</div><div class="line">5.666666666666667</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>混合运算<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; (30+3*5)%6</div><div class="line">3</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>这时候可能有同鞋会发出疑问啦，可不可以用字符或字符串来存储一些值呢。答案是肯定的。这里我们简单的尝试一下。后续会有章节详细讲解<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; num1 = 1024</div><div class="line">&gt;&gt;&gt; num1</div><div class="line">1024</div><div class="line">&gt;&gt;&gt; num1 = 2048</div><div class="line">&gt;&gt;&gt; num1</div><div class="line">2048</div><div class="line">&gt;&gt;&gt; num2 = 201314</div><div class="line">&gt;&gt;&gt; print(num2)</div><div class="line">201314</div><div class="line">&gt;&gt;&gt; num1+num2</div><div class="line">203362</div><div class="line">&gt;&gt;&gt; num3</div><div class="line">Traceback (most recent call last):</div><div class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">NameError: name &apos;num3&apos; is not defined</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>从上面结果可以看到，我们给num1赋值1024，此时num1的值就是1024。随后我们又赋值为2048，其值就变为2048。两个变量名在被赋予值的同时被声明，也因此可以参与运算了。最后我们试着call num3，发现回显traceback, 提示NameError,说，这个num3 未被定义。仔细看看我们的实验过程，确实没有给num3赋予任何值，也从未定义过声明过num3时什么东东。</p>
+<p>到这里呢，我们学会了使用命令式交互脚本来做常见的数学计算，简单的变量赋值。同时我们第一次比较明白的看了一回错误回显，相信后续再遇到麻烦，大家就懂得从这些错误回显中寻找蛛丝马迹了。</p>
+<blockquote>
+<p>ps 新手很容易困惑的一件事儿， 等号和赋值号容易混淆。在coding world，数学中的 = 表示其右边的值或表达式的值赋予左边的变量<br>而等号变成了 == 或者 === 之类的，在python中是 ==</p>
+</blockquote>
+<p>另外值得一提的是,除了 int 和float类型,python的number还支持complex numbers,以及十进制二进制等,这里就不一一列举了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; 3+4j</div><div class="line">(3+4j)</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure></p>
+<p>最后我们再来试试比较有实际意义的计算。注意，其中的 _ 表示暂存上次计算数值，用于计算计算。最后呢，我们用round()函数是结果保留了小数点后的两位。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; tax = 12.5 / 100</div><div class="line">&gt;&gt;&gt; price = 100.50</div><div class="line">&gt;&gt;&gt; price * tax</div><div class="line">12.5625</div><div class="line">&gt;&gt;&gt; price + _</div><div class="line">113.0625</div><div class="line">&gt;&gt;&gt; round(_, 2)</div><div class="line">113.06</div></pre></td></tr></table></figure></p>
+<h3 id="尝试字符串操作"><a href="#尝试字符串操作" class="headerlink" title="尝试字符串操作"></a>尝试字符串操作</h3><p> 学习一些高级编程语言时，都会学习字符串处理，很多时候字符串处理可以带来极大的方便。这个过程中，我们可以更深刻的认识python的语言特性</p>
+<ol>
+<li><p>字符串输出<br>直接从python3.6.1的doc中抽取一小段演示代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; &apos;spam eggs&apos;  # 使用单引号的字符串</div><div class="line">&apos;spam eggs&apos;</div><div class="line">&gt;&gt;&gt; &apos;doesn\&apos;t&apos;  # 使用 反斜杠 \&apos; 转义 ，让反斜杠后的 单引号不被识别为引号对的结束。这样字符串里就可以显示出引号了</div><div class="line">&quot;doesn&apos;t&quot;</div><div class="line">&gt;&gt;&gt; &quot;doesn&apos;t&quot;  # 使用双引号也可以再字符串中表达出单引号。</div><div class="line">&quot;doesn&apos;t&quot;</div><div class="line">&gt;&gt;&gt; &apos;&quot;Yes,&quot; he said.&apos;</div><div class="line">&apos;&quot;Yes,&quot; he said.&apos;</div><div class="line">&gt;&gt;&gt; &quot;\&quot;Yes,\&quot; he said.&quot;</div><div class="line">&apos;&quot;Yes,&quot; he said.&apos;</div><div class="line">&gt;&gt;&gt; &apos;&quot;Isn\&apos;t,&quot; she said.&apos;</div><div class="line">&apos;&quot;Isn\&apos;t,&quot; she said.&apos;</div></pre></td></tr></table></figure>
+<p>有时候，我们希望回显出可读性更高的字符串，又或者时拼接及其灵活的字符串。这时候我们可以再次尝试print()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; &apos;&quot;Isn\&apos;t,&quot; she said.&apos;</div><div class="line">&apos;&quot;Isn\&apos;t,&quot; she said.&apos;</div><div class="line">&gt;&gt;&gt; print(&apos;&quot;Isn\&apos;t,&quot; she said.&apos;)</div><div class="line">&quot;Isn&apos;t,&quot; she said.</div><div class="line">&gt;&gt;&gt; s = &apos;First line.\nSecond line.&apos;  # \n 是换行符 ，</div><div class="line">&gt;&gt;&gt; s  # 不用print()函数时， \n 不会被理解为换行 ，所以结果中会包含 字符串\n,并且显示结果时一行</div><div class="line">&apos;First line.\nSecond line.&apos;</div><div class="line">&gt;&gt;&gt; print(s)  # 用print() 函数来打印字符串的花， \n 就会被识别为换行符，结果就会在\n 后新起一行显示其后内容</div><div class="line">First line.</div><div class="line">Second line.</div></pre></td></tr></table></figure>
+</li>
+<li><p>左斜杠的神奇之处<br>有时候，我们也许不想要print()函数中的 \ 生效,可以试着在字符串的引号前加上一个r</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; print(&apos;C:\some\name&apos;)  # here \n means newline!</div><div class="line">C:\some</div><div class="line">ame</div><div class="line">&gt;&gt;&gt; print(r&apos;C:\some\name&apos;)  # note the r before the quote</div><div class="line">C:\some\name</div></pre></td></tr></table></figure>
+</li>
+<li><p>输出多行字符串<br>输出多行字符串</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; print(&apos;&apos;&apos;hello</div><div class="line">... world</div><div class="line">... llls&apos;&apos;&apos;)</div><div class="line">hello</div><div class="line">world</div><div class="line">llls</div><div class="line">&gt;&gt;&gt; print(&quot;&quot;&quot;</div><div class="line">... llll</div><div class="line">... lslos</div><div class="line">... osk??</div><div class="line">... lsls&quot;&quot;&quot;)</div><div class="line">llll</div><div class="line">lslos</div><div class="line">osk??</div><div class="line">lsls</div><div class="line">&gt;&gt;&gt; print(&quot;&quot;&quot;\</div><div class="line">... sss</div><div class="line">... sdd</div><div class="line">... fe&quot;&quot;&quot;)</div><div class="line">sss</div><div class="line">sdd</div><div class="line">fe</div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>diy一个命令帮助的回显</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; print(&quot;&quot;&quot;\</div><div class="line">... Usage: thingy [OPTIONS]</div><div class="line">...      -h                        Display this usage message</div><div class="line">...      -H hostname               Hostname to connect to</div><div class="line">... &quot;&quot;&quot;)</div><div class="line">Usage: thingy [OPTIONS]</div><div class="line">    -h                        Display this usage message</div><div class="line">    -H hostname               Hostname to connect to</div><div class="line"></div><div class="line">&gt;&gt;&gt; print(&quot;&quot;&quot;</div><div class="line">... Usage: thingy [OPTIONS]</div><div class="line">...      -h                        Display this usage message</div><div class="line">...      -H hostname               Hostname to connect to</div><div class="line">... &quot;&quot;&quot;)</div><div class="line"></div><div class="line">Usage: thingy [OPTIONS]</div><div class="line">    -h                        Display this usage message</div><div class="line">    -H hostname               Hostname to connect to</div><div class="line"></div><div class="line">&gt;&gt;&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>字符串拼接<br>两个字符串直接拼接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; &apos;Py&apos; &apos;thon&apos;</div><div class="line">&apos;Python&apos;</div></pre></td></tr></table></figure>
+<p> 带运算的字符串拼接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; # 3 times &apos;un&apos;, followed by &apos;ium&apos;</div><div class="line">&gt;&gt;&gt; 3 * &apos;un&apos; + &apos;ium&apos;</div><div class="line">&apos;unununium&apos;</div></pre></td></tr></table></figure>
+<p> 变量存贮字符串并拼接.注意,字符串拼接要用 加号 + .不然会报错哦, 会直接提示语法错误的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; prefix = &apos;Py&apos;</div><div class="line">&gt;&gt;&gt; prefix &apos;thon&apos;  # can&apos;t concatenate a variable and a string literal</div><div class="line">  ...</div><div class="line">SyntaxError: invalid syntax</div><div class="line">&gt;&gt;&gt; (&apos;un&apos; * 3) &apos;ium&apos;</div><div class="line">  ...</div><div class="line">SyntaxError: invalid syntax</div><div class="line">&gt;&gt;&gt; prefix + &apos;thon&apos;</div><div class="line">&apos;Python&apos;</div></pre></td></tr></table></figure>
+</li>
+<li><p>字符串索引<br>python的字符串是可以索引的,看下面这个图示,大家应该很容易明白的</p>
+<blockquote>
+<p>var1= “PYTHON” # 定义一个字符串变量var1</p>
+<p>$_0P_1Y_2T_3H_4O_5N_6$</p>
+<p>这样,对于字符串 var1[0,3]则表示下标0与下标3之间的字符串 PYT .</p>
+</blockquote>
+<p>如果还是不明白,再看看这个</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"> +---+---+---+---+---+---+</div><div class="line"> | P | y | t | h | o | n |</div><div class="line"> +---+---+---+---+---+---+</div><div class="line"> 0   1   2   3   4   5   6</div><div class="line">-6  -5  -4  -3  -2  -1</div></pre></td></tr></table></figure>
+<p>做几个小实验,帮助理解</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; word = &quot;visul Studio Code&quot;</div><div class="line">&gt;&gt;&gt; word</div><div class="line">&apos;visul Studio Code&apos;</div><div class="line">&gt;&gt;&gt; word[0]</div><div class="line">&apos;v&apos;</div><div class="line">&gt;&gt;&gt; word[2]</div><div class="line">&apos;s&apos;</div><div class="line">&gt;&gt;&gt; word[2:]</div><div class="line">&apos;sul Studio Code&apos;</div><div class="line">&gt;&gt;&gt; word[5:]</div><div class="line">&apos; Studio Code&apos;</div><div class="line">&gt;&gt;&gt; word[6:12]</div><div class="line">&apos;Studio&apos;</div><div class="line">&gt;&gt;&gt; word[:12]</div><div class="line">&apos;visul Studio&apos;</div><div class="line">&gt;&gt;&gt; len(word) #获取 word的字符串长度</div><div class="line">17</div><div class="line">&gt;&gt;&gt; word[18] #超出下标范围会报错</div><div class="line">Traceback (most recent call last):</div><div class="line">File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</div><div class="line">IndexError: string index out of range</div><div class="line">&gt;&gt;&gt; word[6:12]+&quot; python&quot; #字符串截取再拼接</div><div class="line">&apos;Studio python&apos;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>通过上面的学习，大家应该也发现了命令行交互的一个好处，给指令，立刻生效。无论赋值，还是一些回显行为，都是即刻执行。</p>
+<p>这一篇,我们了解到了如下知识</p>
+<ul>
+<li>命令行交互界面</li>
+<li>number</li>
+<li>string</li>
+</ul>
+<p>为了更深入学习和理解python,大家可以自行阅读python手册,手册通常位于python目录</p>
+<p>比如我的在 D:\codeLang\Python36\Doc\python361.chm</p>
+<p>双击打开即可</p>
+<p>也可以通过开始菜单打开手册<br><img src="http://upload-images.jianshu.io/upload_images/4830879-e6bcba0aa4e9d53d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="20170404171622.png"></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Python </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> Guides </tag>
+            
+            <tag> dataScience </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[简单认识python]]></title>
+      <url>https://MonkeyHi.github.io/2017/04/03/pythonGuide-dataScience-0/</url>
+      <content type="html"><![CDATA[<p>序章</p>
+<ol>
+<li>关于python；</li>
+<li>为什么选择python来做数据科学；</li>
+<li>准备实践环境；</li>
+</ol>
+<blockquote>
+<p>千里之行，始于足下^&amp;^</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Python从零开始系列"><a href="#Python从零开始系列" class="headerlink" title="Python从零开始系列"></a>Python从零开始系列</h1><h2 id="关于Python"><a href="#关于Python" class="headerlink" title="关于Python"></a>关于Python</h2><h3 id="python是什么？"><a href="#python是什么？" class="headerlink" title="python是什么？"></a>python是什么？</h3><blockquote>
+<p>Python is an easy to learn, powerful programming language –引自<a href="https://docs.python.org/2/tutorial/index.html" target="_blank" rel="external">The Python Tutorial</a></p>
+</blockquote>
+<h3 id="python-历史"><a href="#python-历史" class="headerlink" title="python 历史"></a>python 历史</h3><p>20世纪80年代，荷兰大神 Guido van Rossum 开始了python 的开发。从第一个发行版本python 0.9.0 发行于1991年。</p>
+<p>2008年，python 同时发行了python 2.6 和python 3.0 ，随后python 2和python 3 并行开发和发行。</p>
+<p>说到这里，一个令初学者头疼的问题来了，选择哪个版本呢？<br>通常提倡学习python3。一些新特性会很实用。<br>但是python2执行起来会感觉更加流畅。</p>
+<p>这篇教程主要以python3 为主。</p>
+<h3 id="python-特性"><a href="#python-特性" class="headerlink" title="python 特性"></a>python 特性</h3><p>我们每学习一门编程语言，都会去关注其特性。了解编程语言的一些特性，有助于我们选择合适的技术栈。<br>接下来我们来看看python拥有哪些特性。</p>
+<ol>
+<li>解释型编程语言。</li>
+<li>多重泛型，例如：面向对象、函数式、命令式、过程式编程等等。</li>
+<li>用途广泛，可以快速开发、交互式代码开发、构建大型复杂应用程序；既可以用于低级系统操作，有可以用于复杂的分析任务。</li>
+<li>面向对象 object-oriented</li>
+<li>高效的高级数据结构 efficient high-level data structures。</li>
+<li>优雅的语法  elegant syntax</li>
+<li>动态类型 dynamic typing（区别于静态声明）</li>
+<li>强制缩进 （后续学习过程特别注意，缩进层级错了会导致解释器无法理解你写的代码）</li>
+<li>垃圾回收机制</li>
+<li>简单、易学、易用</li>
+<li>跨平台（树莓派等嵌入式linux设备、esp8266、windows、osx、linux,32位和64位）</li>
+<li>健壮</li>
+<li>拥有健全的生态系统</li>
+</ol>
+<h2 id="为什么选择python来做数据科学"><a href="#为什么选择python来做数据科学" class="headerlink" title="为什么选择python来做数据科学"></a>为什么选择python来做数据科学</h2><p>我们已经了解过python的特性，其中简单提到生态系统。</p>
+<p>python拥有一套完善的生态系统，拥有强大的科学栈（Scientific Stack）。<br>简单说，科学栈就是很多库的集合，比如我们后续会一起学习的numpy、scipy、matplotlib、pandas ……。</p>
+<p>其中的scipy实现了科学和金融中常用的重要功能。具体后续教程中一起学习。</p>
+<p>对比java,python易学易用，代码可读性很高，免编译。</p>
+<p>对比nodejs,python 科学栈非常诱人。</p>
+<p>对比matlab, python 的大部分科学栈是免费的。同时python有很多现成的科学计算套件非常方便（比如pandas,spider)</p>
+<h2 id="准备实践环境"><a href="#准备实践环境" class="headerlink" title="准备实践环境"></a>准备实践环境</h2><p>在对python 有了简单认识后，我们开始着手准备实验环境。</p>
+<h3 id="在windows上安装python"><a href="#在windows上安装python" class="headerlink" title="在windows上安装python"></a>在windows上安装python</h3><ol>
+<li>从 <a href="https://www.python.org/downloads/" target="_blank" rel="external">python官网</a>获取安装文件(<a href="https://www.python.org/ftp/python/3.6.1/python-3.6.1-amd64.exe" target="_blank" rel="external">64位</a>、<a href="https://www.python.org/ftp/python/3.6.1/python-3.6.1.exe" target="_blank" rel="external">32位</a>)</li>
+<li>以我的64位win10安装过程为例<br><img src="http://upload-images.jianshu.io/upload_images/4830879-1dd57bba117e539c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403231025.png"><br><img src="http://upload-images.jianshu.io/upload_images/4830879-edaf28552851ec1b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403231240.png"><br><img src="http://upload-images.jianshu.io/upload_images/4830879-e7875e10fc387d16.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403231455.png"><br><img src="http://upload-images.jianshu.io/upload_images/4830879-212bbf296615061c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403231512.png"><br><img src="http://upload-images.jianshu.io/upload_images/4830879-d189d547800b41ac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403232104.png"></li>
+<li>检查环境变量是否生效，win键+R ==&gt;&gt;输入 cmd 回车==&gt;&gt;依次执行如下命令测试<figure class="highlight plain"><figcaption><span>python 版本</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python -V</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<figure class="highlight plain"><figcaption><span>pip 版本</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip -v</div></pre></td></tr></table></figure>
+<p>如果出现如下结果，恭喜你，python3.6.1版已经被安装到你的电脑上啦。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Microsoft Windows [版本 10.0.14393]</div><div class="line">(c) 2016 Microsoft Corporation。保留所有权利。</div><div class="line"></div><div class="line">C:\Users\ipaddr&gt;python -V</div><div class="line">Python 3.6.1</div><div class="line"></div><div class="line">C:\Users\ipaddr&gt;pip -V</div><div class="line">pip 9.0.1 from d:\codelang\python36\lib\site-packages (python 3.6)</div><div class="line"></div><div class="line">C:\Users\ipaddr&gt;</div></pre></td></tr></table></figure></p>
+<h3 id="选择一款顺手的文本编辑器"><a href="#选择一款顺手的文本编辑器" class="headerlink" title="选择一款顺手的文本编辑器"></a>选择一款顺手的文本编辑器</h3><p>选择一款带代码高亮甚至代码提示的代码编辑器，可以有效提高效率。</p>
+<p>这里推荐几款<br>vscode 是微软开源的一款轻量级代码编辑器，适当添加插件即可成为开发神器<a href="https://code.visualstudio.com/" target="_blank" rel="external">进入官网，点击Download按钮</a></p>
+<p>sublime text 3 <a href="https://download.sublimetext.com/Sublime%20Text%20Build%203126%20x64%20Setup.exe" target="_blank" rel="external">下载64位</a>|<a href="https://download.sublimetext.com/Sublime%20Text%20Build%203126%20Setup.exe" target="_blank" rel="external">下载32位</a></p>
+<p>atom <a href="https://github.com/atom/atom/releases/download/v1.15.0/AtomSetup-x64.msi" target="_blank" rel="external">下载64位</a>|<a href="https://github.com/atom/atom/releases/download/v1.15.0/AtomSetup.exe" target="_blank" rel="external">下载32位</a></p>
+<p>notepad++ <a href="https://notepad-plus-plus.org/repository/7.x/7.3.3/npp.7.3.3.Installer.x64.exe" target="_blank" rel="external">下载64位</a>|<a href="https://notepad-plus-plus.org/repository/7.x/7.3.3/npp.7.3.3.Installer.exe" target="_blank" rel="external">下载32位</a></p>
+<h3 id="准备科学栈"><a href="#准备科学栈" class="headerlink" title="准备科学栈"></a>准备科学栈</h3><p>这里主要演示如何使用pip 安装 一些包（包可以是一个库或多个库的集合）</p>
+<p>我们计划后续边学边准备我们自己的科学栈</p>
+<p>先来安装一个ipython吧，这里有必要简单介绍一下ipython，IPython 可以认为是一个开发工具，类似于我之前提到的spyder.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install ipython</div></pre></td></tr></table></figure></p>
+<p>结果如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">C:\Users\ipaddr&gt;pip install ipython</div><div class="line">Collecting ipython</div><div class="line">  Downloading ipython-5.3.0-py3-none-any.whl (750kB)</div><div class="line">    100% |████████████████████████████████| 757kB 917kB/s</div><div class="line">Collecting pygments (from ipython)</div><div class="line">  Downloading Pygments-2.2.0-py2.py3-none-any.whl (841kB)</div><div class="line">    100% |████████████████████████████████| 849kB 854kB/s</div><div class="line">Collecting traitlets&gt;=4.2 (from ipython)</div><div class="line">  Downloading traitlets-4.3.2-py2.py3-none-any.whl (74kB)</div><div class="line">    100% |████████████████████████████████| 81kB 2.5MB/s</div><div class="line">Collecting colorama; sys_platform == &quot;win32&quot; (from ipython)</div><div class="line">  Using cached colorama-0.3.7-py2.py3-none-any.whl</div><div class="line">Collecting simplegeneric&gt;0.8 (from ipython)</div><div class="line">  Downloading simplegeneric-0.8.1.zip</div><div class="line">Requirement already satisfied: setuptools&gt;=18.5 in d:\codelang\python36\lib\site-packages (from ipython)</div><div class="line">Collecting prompt-toolkit&lt;2.0.0,&gt;=1.0.4 (from ipython)</div><div class="line">  Downloading prompt_toolkit-1.0.14-py3-none-any.whl (248kB)</div><div class="line">    100% |████████████████████████████████| 256kB 1.7MB/s</div><div class="line">Collecting decorator (from ipython)</div><div class="line">  Downloading decorator-4.0.11-py2.py3-none-any.whl</div><div class="line">Collecting pickleshare (from ipython)</div><div class="line">  Downloading pickleshare-0.7.4-py2.py3-none-any.whl</div><div class="line">Collecting ipython-genutils (from traitlets&gt;=4.2-&gt;ipython)</div><div class="line">  Downloading ipython_genutils-0.2.0-py2.py3-none-any.whl</div><div class="line">Collecting six (from traitlets&gt;=4.2-&gt;ipython)</div><div class="line">  Using cached six-1.10.0-py2.py3-none-any.whl</div><div class="line">Collecting wcwidth (from prompt-toolkit&lt;2.0.0,&gt;=1.0.4-&gt;ipython)</div><div class="line">  Downloading wcwidth-0.1.7-py2.py3-none-any.whl</div><div class="line">Installing collected packages: pygments, ipython-genutils, decorator, six, traitlets, colorama, simplegeneric, wcwidth, prompt-toolkit, pickleshare, ipython</div><div class="line">  Running setup.py install for simplegeneric ... done</div><div class="line">Successfully installed colorama-0.3.7 decorator-4.0.11 ipython-5.3.0 ipython-genutils-0.2.0 pickleshare-0.7.4 prompt-toolkit-1.0.14 pygments-2.2.0 simplegeneric-0.8.1 six-1.10.0 traitlets-4.3.2 wcwidth-0.1.7</div><div class="line"></div><div class="line">C:\Users\ipaddr&gt;</div></pre></td></tr></table></figure></p>
+<p>这样我们就安装好了ipython。从结果可以看到，新版本的pip已经可以自动安装该package所依赖的package</p>
+<p>后续我们会经常这样安装package。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> Python </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> Guides </tag>
+            
+            <tag> dataScience </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[修改powershell脚本可执行权限]]></title>
+      <url>https://MonkeyHi.github.io/2016/04/01/powershell-guid-0/</url>
+      <content type="html"><![CDATA[<p>windows中，默认是禁止执行powershell脚本的。如果想要编写一些powershell脚本，需要修改配置<br><a id="more"></a></p>
+<h1 id="POWERSHELL脚本执行权限"><a href="#POWERSHELL脚本执行权限" class="headerlink" title="POWERSHELL脚本执行权限"></a>POWERSHELL脚本执行权限</h1><ul>
+<li>Restricted——默认的设置， 不允许任何script运行</li>
+<li>AllSigned——只能运行经过数字证书签名的script</li>
+<li>RemoteSigned——运行本地的script不需要数字签名，但是运行从网络上下载的script就必须要有数字签名</li>
+<li>Unrestricted——允许所有的script运行<h1 id="简单修改为允许所有的"><a href="#简单修改为允许所有的" class="headerlink" title="简单修改为允许所有的"></a>简单修改为允许所有的</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set-ExecutionPolicy Unrestricted</div></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> powershell </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> guids </tag>
+            
+            <tag> powershell </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Hello World 第一个post]]></title>
+      <url>https://MonkeyHi.github.io/2015/04/21/hello-world/</url>
+      <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Hexo </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Hello </tag>
+            
+            <tag> World </tag>
+            
+        </tags>
+        
+    </entry>
+    
+  
+  
+    
+    <entry>
+      <title><![CDATA[about]]></title>
+      <url>https://MonkeyHi.github.io/about/index.html</url>
+      <content type="html"></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[tags]]></title>
+      <url>https://MonkeyHi.github.io/tags/index.html</url>
+      <content type="html"></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[友情链接]]></title>
+      <url>https://MonkeyHi.github.io/friendslink/index.html</url>
+      <content type="html"></content>
+    </entry>
+    
+  
+</search>

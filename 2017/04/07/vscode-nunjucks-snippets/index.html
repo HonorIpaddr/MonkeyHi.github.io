@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="MonkeyHi" />
+
+
+
+<meta name="description" content="平时写代码，总习惯用vi或者vscode。无奈vscode的nunjucks插件只有高亮，没有补全功能。干脆自己加上呗。vscode还是很容易定制 自己的代码片段的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vscode-nunjucks-snippets">
+<meta property="og:url" content="https://MonkeyHi.github.io/2017/04/07/vscode-nunjucks-snippets/index.html">
+<meta property="og:site_name" content="MonkeyHi">
+<meta property="og:description" content="平时写代码，总习惯用vi或者vscode。无奈vscode的nunjucks插件只有高亮，没有补全功能。干脆自己加上呗。vscode还是很容易定制 自己的代码片段的。">
+<meta property="og:updated_time" content="2017-04-28T05:07:19.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vscode-nunjucks-snippets">
+<meta name="twitter:description" content="平时写代码，总习惯用vi或者vscode。无奈vscode的nunjucks插件只有高亮，没有补全功能。干脆自己加上呗。vscode还是很容易定制 自己的代码片段的。">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>vscode-nunjucks-snippets | MonkeyHi</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">MonkeyHi</a></h1>
+        </hgroup>
+
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:rddapi@qq.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/MonkeyHi" title="GitHub"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/BBR/">BBR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Guides/">Guides</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hello/">Hello</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/World/">World</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cd/">cd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ci/">ci</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/continuous-deployment/">continuous-deployment</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/continuous-intergration-java/">continuous-intergration-java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dataScience/">dataScience</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/guids/">guids</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nunjucks/">nunjucks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/powershell/">powershell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snippets/">snippets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/thinkjs/">thinkjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vscode/">vscode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/持续部署/">持续部署</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/持续集成/">持续集成</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">MonkeyHi</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">MonkeyHi</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:rddapi@qq.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/MonkeyHi" title="GitHub"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-vscode-nunjucks-snippets" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/07/vscode-nunjucks-snippets/" class="article-date">
+      <time datetime="2017-04-07T13:48:10.000Z" itemprop="datePublished">2017-04-07</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      vscode-nunjucks-snippets
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/other/">other</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nunjucks/">nunjucks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/snippets/">snippets</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/thinkjs/">thinkjs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vscode/">vscode</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>平时写代码，总习惯用vi或者vscode。无奈vscode的nunjucks插件只有高亮，没有补全功能。干脆自己加上呗。vscode还是很容易定制 自己的代码片段的。<br><a id="more"></a></p>
+<p># </p>
+<h2 id="新建用户代码片段"><a href="#新建用户代码片段" class="headerlink" title="新建用户代码片段"></a>新建用户代码片段</h2><p>文件(F)–&gt;首选项(P)–&gt;用户代码片段(S)<br>img<br>输入”nunjucks”,选择”Nunjucks”,打开nunjucks.json文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	/*</div><div class="line">		// Place your snippets for Nunjucks here. Each snippet is defined under a snippet name and has a prefix, body and </div><div class="line">		// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:</div><div class="line">		// $1, $2 for tab stops, $0 for the final cursor position, and $&#123;1:label&#125;, $&#123;2:another&#125; for placeholders. Placeholders with the </div><div class="line">		// same ids are connected.</div><div class="line">		// Example:</div><div class="line">		&quot;Print to console&quot;: &#123;</div><div class="line">			&quot;prefix&quot;: &quot;log&quot;,</div><div class="line">			&quot;body&quot;: [</div><div class="line">				&quot;console.log(&apos;$1&apos;);&quot;,</div><div class="line">				&quot;$2&quot;</div><div class="line">			],</div><div class="line">			&quot;description&quot;: &quot;Log output to console&quot;</div><div class="line">		&#125;</div><div class="line">	*/</div></pre></td></tr></table></figure></p>
+<h2 id="写入自定义的snippets"><a href="#写入自定义的snippets" class="headerlink" title="写入自定义的snippets"></a>写入自定义的snippets</h2><h3 id="找参考"><a href="#找参考" class="headerlink" title="找参考"></a>找参考</h3><p>对于没有自定义snippets经验且不是很熟悉nunjucks的情况，完全自编显然不合适，此时我们应该参考现有的snippets和其它编辑器的snippets。<br>img<br>在nunjucks官网发现有针对atom的自动补全插件。于是上github看看其snippets。<br>urlgithubof<br><a href="https://github.com/alohaas/language-nunjucks/blob/master/snippets/atom-nunjucks.cson" target="_blank" rel="external">https://github.com/alohaas/language-nunjucks/blob/master/snippets/atom-nunjucks.cson</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">&apos;.source.nunjucks, .text.html.nunjucks&apos;:</div><div class="line">  &apos;Block&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;block&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% block $&#123;1:name&#125; %&#125;\n\t$2\n&#123;% endblock %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;block defines a section on the template and identifies it with a name. This is used by template inheritance. Base templates can specify blocks and child templates can override them with new content.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#block&apos;</div><div class="line">  &apos;Complete Block&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;&#123;%&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% $1 %&apos;</div><div class="line">    &apos;description&apos;: &apos;A nunjucks template block.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/&apos;</div><div class="line">  &apos;Complete Variable&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;&#123;&#123;&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;&#123; $&#123;1:variable&#125; &apos;</div><div class="line">    &apos;description&apos;: &apos;A variable looks up a value from the template context.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#variables&apos;</div><div class="line">  &apos;Extends&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;extends&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% extends &quot;$&#123;1:template&#125;&quot; %&#125;$2&apos;</div><div class="line">    &apos;description&apos;: &apos;extends is used to specify template inheritance. The specified template is used as a base template.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#extends&apos;</div><div class="line">  &apos;Include&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;include&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% include &quot;$&#123;1:template&#125;&quot; %&#125;$2&apos;</div><div class="line">    &apos;description&apos;: &apos;Include pulls in other templates in place.It\&apos;s useful when you need to share smaller chunks across several templates that already inherit other templates.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#include&apos;</div><div class="line">  &apos;Filter&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;filter&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% filter $&#123;1:filter&#125; %&#125;\n\t$2\n&#123;% endfilter %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;A filter block allows you to call a filter with the contents of the block. Instead passing a value with the | syntax, the render contents from the block will be passed.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#filter&apos;</div><div class="line">  &apos;For&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;for&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% for $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endfor %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;for iterates over arrays and dictionaries.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#for&apos;</div><div class="line">  &apos;asyncEach&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;asyncEach&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% asyncEach $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endeach %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;asyncEach is an asynchronous version of for. You only need this if you are using a custom template loader that is asynchronous; otherwise you will never need it. Async filters and extensions also need this, but internally loops are automatically converted into asyncEach if any async filters and extensions are used within the loop.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#asynceach&apos;</div><div class="line">  &apos;asyncAll&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;asyncAll&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% asyncAll $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endeach %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;asyncAll is similar to asyncEach, except it renders all the items in parallel, preserving the order of the items. This is only helpful if you are using asynchronous filters, extensions, or loaders. Otherwise you should never use this.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#asyncall&apos;</div><div class="line">  &apos;If&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;if&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% endif %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;if tests a condition and lets you selectively display content. It behaves exactly as javascript\&apos;s if behaves.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;If Else&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;ife&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% else %&#125;\n\t$3\n&#123;% endif %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;It creates the if else block.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;If Elif&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;ifel&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% elif $&#123;3:condition&#125; %&#125;\n\t$4\n&#123;% else %&#125;\n\t$5\n&#123;% endif %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;Alternate condition with the if block&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;Elif&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;elif&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% elif $&#123;1:condition&#125; %&#125;\n\t$2&apos;</div><div class="line">    &apos;description&apos;: &apos;Alternate condition in the if block&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;Else&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;else&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% else $&#123;1:condition&#125; %&#125;\n\t$2&apos;</div><div class="line">    &apos;description&apos;: &apos;Alternate condition in the if block&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#if&apos;</div><div class="line">  &apos;Set&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;set&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% set $&#123;1:var&#125; = $&#123;2:value&#125; %&#125;$3&apos;</div><div class="line">    &apos;description&apos;: &apos;set lets you create/modify a variable.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#set&apos;</div><div class="line">  &apos;Macro&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;macro&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% macro $&#123;1:name&#125;($&#123;2:args&#125;) %&#125;\n\t$3\n&#123;% endmacro %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;macro allows you to define reusable chunks of content. It is similar to a function in a programming language. &apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#macro&apos;</div><div class="line">  &apos;Import&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;import&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% import &quot;$&#123;1:template&#125;&quot; as $&#123;2:var&#125; %&#125;$3&apos;</div><div class="line">    &apos;description&apos;: &apos;import loads a different template and allows you to access its exported values. Macros and top-level assignments (done with set) are exported from templates, allowing you to access them in a different template.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#import&apos;</div><div class="line">  &apos;From Import&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;from&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% from &quot;$&#123;1:template&#125;&quot; import $&#123;2:macro&#125; as $&#123;3:var&#125; %&#125;$4&apos;</div><div class="line">    &apos;description&apos;: &apos;It imports specific values from a template into the current namespace.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#import&apos;</div><div class="line">  &apos;Raw&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;raw&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% raw %&#125;\n\t$1\n&#123;% endraw %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;If you want to output any of the special nunjucks tags like &#123;&#123;, you can use raw and anything inside of it will be output as plain text.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#raw&apos;</div><div class="line">  &apos;Call&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;get&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% call $&#123;1:macro&#125; %&#125;\n\t$2\n&#123;% endcall %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;A call block enables you to call a macro with all the text inside the tag. This is helpful if you want to pass a lot of content into a macro. The content is available inside the macro as caller().&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#call&apos;</div><div class="line">  &apos;Alt Variable&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;var&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;&#123; $&#123;1:var&#125; &#125;&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;A variable looks up a value from the template context. If you wanted to simply display a variable, you would do: &#123;&#123; username &#125;&#125;&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#variables&apos;</div><div class="line">  &apos;Super&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;super&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;&#123; super() &#125;&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;You can render the contents of the parent block inside a child block by calling super.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#super&apos;</div><div class="line">  # Expressions</div><div class="line">  &apos;Or&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;or&apos;</div><div class="line">    &apos;body&apos;: &apos;or&apos;</div><div class="line">    &apos;description&apos;: &apos;Logical or operator.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#logic&apos;</div><div class="line">  # # Filter blocks</div><div class="line">  &apos;Pipe&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;pipe&apos;</div><div class="line">    &apos;body&apos;: &apos;| $&#123;1:filter&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;You can pass filters from the variable directly e.g. &#123;&#123; foo | escape &#125;&#125;&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#filters&apos;</div><div class="line">  # This is a sample tag just in case someone wants to add more to it</div><div class="line">  # More Filters</div><div class="line">  # &apos;Name&apos;:</div><div class="line">  #   &apos;prefix&apos;: &apos;&apos;</div><div class="line">  #   &apos;body&apos;: &apos;&apos;</div><div class="line">  #   &apos;description&apos;: &apos;&apos;</div><div class="line">  #   &apos;descriptionMoreURL&apos;: &apos;&apos;</div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从上面代码可以看到，atom和vscode的snippets的写法有些区别，是否兼容也并不好说。出于某种懒惰心理，还是直改写成json格式吧。</p>
+<h3 id="比较"><a href="#比较" class="headerlink" title="比较"></a>比较</h3><p>仔细看nunjucks的json例子和cson中的写法，可以发现，只是格式不同。字段基本一致（额，暂且叫字段吧）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#atom cson 中的写法</div><div class="line">&apos;Name&apos;:</div><div class="line">  &apos;prefix&apos;: &apos;&apos;</div><div class="line">  &apos;body&apos;: &apos;&apos;</div><div class="line">  &apos;description&apos;: &apos;&apos;</div><div class="line">  &apos;descriptionMoreURL&apos;: &apos;&apos;</div><div class="line"># vscode 中的json</div><div class="line">  &quot;Name&quot;: &#123;</div><div class="line">    &quot;prefix&quot;: &quot;&quot;,</div><div class="line">    &quot;body&quot;: [</div><div class="line">          </div><div class="line">      ],</div><div class="line">    &quot;description&quot;: &quot;description of&quot;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="改写"><a href="#改写" class="headerlink" title="改写"></a>改写</h3><p>以block为例，我们一起先看看如何改写。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># 改写前</div><div class="line"></div><div class="line">&apos;Block&apos;:</div><div class="line">    &apos;prefix&apos;: &apos;block&apos;</div><div class="line">    &apos;body&apos;: &apos;&#123;% block $&#123;1:name&#125; %&#125;\n\t$2\n&#123;% endblock %&#125;&apos;</div><div class="line">    &apos;description&apos;: &apos;block defines a section on the template and identifies it with a name. This is used by template inheritance. Base templates can specify blocks and child templates can override them with new content.&apos;</div><div class="line">    &apos;descriptionMoreURL&apos;: &apos;http://mozilla.github.io/nunjucks/templating.html#block&apos;</div><div class="line"># 改写后</div><div class="line">  &quot;Block&quot;: &#123;</div><div class="line">    &quot;prefix&quot;: &quot;block&quot;,</div><div class="line">    &quot;body&quot;:&quot;&#123;% block $&#123;1:name&#125; %&#125;\n\t$2\n&#123;% endblock %&#125;&quot;</div><div class="line">    &quot;description&quot;: &quot;block defines a section on the template and identifies it with a name. This is used by template inheritance. Base templates can specify blocks and child templates can override them with new content.&quot;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>so easy,类似的方法，大家何以做很多自己的snippet，写在对应语言的json中就可以。但是，大家要注意一些细节，部分片段内包含的引号是需要转义的。</p>
+<h3 id="改好的-nunjuck用户代码片段"><a href="#改好的-nunjuck用户代码片段" class="headerlink" title="改好的 nunjuck用户代码片段"></a>改好的 nunjuck用户代码片段</h3><p>有能力的同学可以自行了解cson并写个cson2json<br>这里贴出我改写好的，如有错误，各路高手多多指教。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	/*</div><div class="line">		// Place your snippets for Nunjucks here. Each snippet is defined under a snippet name and has a prefix, body and </div><div class="line">		// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:</div><div class="line">		// $1, $2 for tab stops, $0 for the final cursor position, and $&#123;1:label&#125;, $&#123;2:another&#125; for placeholders. Placeholders with the </div><div class="line">		// same ids are connected.</div><div class="line">		// Example:</div><div class="line">		&quot;Print to console&quot;: &#123;</div><div class="line">			&quot;prefix&quot;: &quot;log&quot;,</div><div class="line">			&quot;body&quot;: [</div><div class="line">				&quot;console.log(&apos;$1&apos;);&quot;,</div><div class="line">				&quot;$2&quot;</div><div class="line">			],</div><div class="line">			&quot;description&quot;: &quot;Log output to console&quot;</div><div class="line">		&#125;</div><div class="line">	*/</div><div class="line">	&quot;Block&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;block&quot;,</div><div class="line">		&quot;body&quot;: [</div><div class="line">			&quot;&#123;% block $&#123;1:name&#125; %&#125;\n\t$2\n&#123;% endblock %&#125;&quot;</div><div class="line">		],</div><div class="line">		&quot;description&quot;: &quot;block defines a section on the template and identifies it with a name. This is used by template inheritance. Base templates can specify blocks and child templates can override them with new content.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Complete Block&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;njk&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% $1 %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A nunjucks template block.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Complete Variable&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;v&#123;&#125;&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;&#123; $&#123;1:variable&#125; &#125;&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A variable looks up a value from the template context.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Extends&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;extends&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% extends \&quot;$&#123;1:template&#125;\&quot; %&#125;$2&quot;,</div><div class="line">		&quot;description&quot;: &quot;extends is used to specify template inheritance. The specified template is used as a base template.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Include&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;include&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% include \&quot;$&#123;1:template&#125;\&quot; %&#125;$2&quot;,</div><div class="line">		&quot;description&quot;: &quot;Include pulls in other templates in place.It\&quot;s useful when you need to share smaller chunks across several templates that already inherit other templates.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Filter&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;filter&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% filter $&#123;1:filter&#125; %&#125;\n\t$2\n&#123;% endfilter %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A filter block allows you to call a filter with the contents of the block. Instead passing a value with the | syntax, the render contents from the block will be passed.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;For&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;for&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% for $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endfor %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;for iterates over arrays and dictionaries.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;asyncEach&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;asyncEach&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% asyncEach $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endeach %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;asyncEach is an asynchronous version of for. You only need this if you are using a custom template loader that is asynchronous; otherwise you will never need it. Async filters and extensions also need this, but internally loops are automatically converted into asyncEach if any async filters and extensions are used within the loop.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;asyncAll&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;asyncAll&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% asyncAll $&#123;1:item&#125; in $&#123;2:sequence&#125; %&#125;\n\t$3\n&#123;% endeach %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;asyncAll is similar to asyncEach, except it renders all the items in parallel, preserving the order of the items. This is only helpful if you are using asynchronous filters, extensions, or loaders. Otherwise you should never use this.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;If&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;if&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% endif %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;if tests a condition and lets you selectively display content. It behaves exactly as javascript\&quot;s if behaves.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;If Else&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;ife&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% else %&#125;\n\t$3\n&#123;% endif %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;It creates the if else block.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;If Elif&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;ifel&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% if $&#123;1:condition&#125; %&#125;\n\t$2\n&#123;% elif $&#123;3:condition&#125; %&#125;\n\t$4\n&#123;% else %&#125;\n\t$5\n&#123;% endif %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;Alternate condition with the if block&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Elif&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;elif&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% elif $&#123;1:condition&#125; %&#125;\n\t$2&quot;,</div><div class="line">		&quot;description&quot;: &quot;Alternate condition in the if block&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;Else&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;else&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% else $&#123;1:condition&#125; %&#125;\n\t$2&quot;,</div><div class="line">		&quot;description&quot;: &quot;Alternate condition in the if block&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;Set&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;set&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% set $&#123;1:var&#125; = $&#123;2:value&#125; %&#125;$3&quot;,</div><div class="line">		&quot;description&quot;: &quot;set lets you create/modify a variable.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;Macro&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;macro&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% macro $&#123;1:name&#125;($&#123;2:args&#125;) %&#125;\n\t$3\n&#123;% endmacro %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;macro allows you to define reusable chunks of content. It is similar to a function in a programming language. &quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Import&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;import&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% import \&quot;$&#123;1:template&#125;\&quot; as $&#123;2:var&#125; %&#125;$3&quot;,</div><div class="line">		&quot;description&quot;: &quot;import loads a different template and allows you to access its exported values. Macros and top-level assignments (done with set) are exported from templates, allowing you to access them in a different template.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;From Import&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;from&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% from \&quot;$&#123;1:template&#125;\&quot; import $&#123;2:macro&#125; as $&#123;3:var&#125; %&#125;$4&quot;,</div><div class="line">		&quot;description&quot;: &quot;It imports specific values from a template into the current namespace.&quot;</div><div class="line"></div><div class="line">	&#125;,</div><div class="line">	&quot;Raw&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;raw&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% raw %&#125;\n\t$1\n&#123;% endraw %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;If you want to output any of the special nunjucks tags like &#123;&#123;, you can use raw and anything inside of it will be output as plain text.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Call&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;call&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;% call $&#123;1:macro&#125; %&#125;\n\t$2\n&#123;% endcall %&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A call block enables you to call a macro with all the text inside the tag. This is helpful if you want to pass a lot of content into a macro. The content is available inside the macro as caller().&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Alt Variable&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;var&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;&#123; $&#123;1:var&#125; &#125;&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;A variable looks up a value from the template context. If you wanted to simply display a variable, you would do: &#123;&#123; username &#125;&#125;&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Super&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;super&quot;,</div><div class="line">		&quot;body&quot;: &quot;&#123;&#123; super() &#125;&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;You can render the contents of the parent block inside a child block by calling super.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Or&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;or&quot;,</div><div class="line">		&quot;body&quot;: &quot;or&quot;,</div><div class="line">		&quot;description&quot;: &quot;Logical or operator.&quot;</div><div class="line">	&#125;,</div><div class="line">	&quot;Pipe&quot;: &#123;</div><div class="line">		&quot;prefix&quot;: &quot;pipe&quot;,</div><div class="line">		&quot;body&quot;: &quot;| $&#123;1:filter&#125;&quot;,</div><div class="line">		&quot;description&quot;: &quot;You can pass filters from the variable directly e.g. &#123;&#123; foo | escape &#125;&#125;&quot;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/04/07/vscode-nunjucks-snippets/">vscode-nunjucks-snippets</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">MonkeyHi</a></p>
+        <p><span>发布时间:</span>2017-04-07, 21:48:10</p>
+        <p><span>最后更新:</span>2017-04-28, 13:07:19</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/07/vscode-nunjucks-snippets/" title="vscode-nunjucks-snippets">https://MonkeyHi.github.io/2017/04/07/vscode-nunjucks-snippets/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://MonkeyHi.github.io/2017/04/07/vscode-nunjucks-snippets/　　作者: MonkeyHi" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/04/29/ubuntu1604upgradekernel/">
+                    ubuntu1604升级内核，开启BBR
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2017/04/04/pythonGuide-dataScience-2/">
+                    怎么运行python文件
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#新建用户代码片段"><span class="toc-number">1.</span> <span class="toc-text">新建用户代码片段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写入自定义的snippets"><span class="toc-number">2.</span> <span class="toc-text">写入自定义的snippets</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#找参考"><span class="toc-number">2.1.</span> <span class="toc-text">找参考</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#比较"><span class="toc-number">2.2.</span> <span class="toc-text">比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改写"><span class="toc-number">2.3.</span> <span class="toc-text">改写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改好的-nunjuck用户代码片段"><span class="toc-number">2.4.</span> <span class="toc-text">改好的 nunjuck用户代码片段</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"vscode-nunjucks-snippets　| MonkeyHi　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/04/29/ubuntu1604upgradekernel/" title="上一篇: ubuntu1604升级内核，开启BBR">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2017/04/04/pythonGuide-dataScience-2/" title="下一篇: 怎么运行python文件">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/01/10/continuous-intergration-java/">springboot借助coding.net持续集成和持续部署</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/10/cicdbase/">持续集成</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/29/ubuntu1604upgradekernel/">ubuntu1604升级内核，开启BBR</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/07/vscode-nunjucks-snippets/">vscode-nunjucks-snippets</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/pythonGuide-dataScience-2/">怎么运行python文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/pythonGuide-dataScience-1/">第一次运行python程序,从命令行交互开始</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/03/pythonGuide-dataScience-0/">简单认识python</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/01/powershell-guid-0/">修改powershell脚本可执行权限</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/04/21/hello-world/">Hello World 第一个post</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2019 MonkeyHi
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="MonkeyHi" />
+
+
+
+<meta name="description" content="序章
+
+关于python；
+为什么选择python来做数据科学；
+准备实践环境；
+
+
+千里之行，始于足下^&amp;amp;^">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单认识python">
+<meta property="og:url" content="https://MonkeyHi.github.io/2017/04/03/pythonGuide-dataScience-0/index.html">
+<meta property="og:site_name" content="MonkeyHi">
+<meta property="og:description" content="序章
+
+关于python；
+为什么选择python来做数据科学；
+准备实践环境；
+
+
+千里之行，始于足下^&amp;amp;^">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4830879-1dd57bba117e539c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4830879-edaf28552851ec1b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4830879-e7875e10fc387d16.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4830879-212bbf296615061c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4830879-d189d547800b41ac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-04-04T09:41:23.810Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="简单认识python">
+<meta name="twitter:description" content="序章
+
+关于python；
+为什么选择python来做数据科学；
+准备实践环境；
+
+
+千里之行，始于足下^&amp;amp;^">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4830879-1dd57bba117e539c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>简单认识python | MonkeyHi</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">MonkeyHi</a></h1>
+        </hgroup>
+
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:rddapi@qq.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/MonkeyHi" title="GitHub"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/BBR/">BBR</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Guides/">Guides</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hello/">Hello</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/World/">World</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cd/">cd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ci/">ci</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/continuous-deployment/">continuous-deployment</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/continuous-intergration-java/">continuous-intergration-java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dataScience/">dataScience</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/guids/">guids</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nunjucks/">nunjucks</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/powershell/">powershell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snippets/">snippets</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/thinkjs/">thinkjs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vscode/">vscode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/持续部署/">持续部署</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/持续集成/">持续集成</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">MonkeyHi</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">MonkeyHi</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:rddapi@qq.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/MonkeyHi" title="GitHub"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-pythonGuide-dataScience-0" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/03/pythonGuide-dataScience-0/" class="article-date">
+      <time datetime="2017-04-03T06:19:28.000Z" itemprop="datePublished">2017-04-03</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      简单认识python
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Python/">Python</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Guides/">Guides</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dataScience/">dataScience</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>序章</p>
+<ol>
+<li>关于python；</li>
+<li>为什么选择python来做数据科学；</li>
+<li>准备实践环境；</li>
+</ol>
+<blockquote>
+<p>千里之行，始于足下^&amp;^</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Python从零开始系列"><a href="#Python从零开始系列" class="headerlink" title="Python从零开始系列"></a>Python从零开始系列</h1><h2 id="关于Python"><a href="#关于Python" class="headerlink" title="关于Python"></a>关于Python</h2><h3 id="python是什么？"><a href="#python是什么？" class="headerlink" title="python是什么？"></a>python是什么？</h3><blockquote>
+<p>Python is an easy to learn, powerful programming language –引自<a href="https://docs.python.org/2/tutorial/index.html" target="_blank" rel="external">The Python Tutorial</a></p>
+</blockquote>
+<h3 id="python-历史"><a href="#python-历史" class="headerlink" title="python 历史"></a>python 历史</h3><p>20世纪80年代，荷兰大神 Guido van Rossum 开始了python 的开发。从第一个发行版本python 0.9.0 发行于1991年。</p>
+<p>2008年，python 同时发行了python 2.6 和python 3.0 ，随后python 2和python 3 并行开发和发行。</p>
+<p>说到这里，一个令初学者头疼的问题来了，选择哪个版本呢？<br>通常提倡学习python3。一些新特性会很实用。<br>但是python2执行起来会感觉更加流畅。</p>
+<p>这篇教程主要以python3 为主。</p>
+<h3 id="python-特性"><a href="#python-特性" class="headerlink" title="python 特性"></a>python 特性</h3><p>我们每学习一门编程语言，都会去关注其特性。了解编程语言的一些特性，有助于我们选择合适的技术栈。<br>接下来我们来看看python拥有哪些特性。</p>
+<ol>
+<li>解释型编程语言。</li>
+<li>多重泛型，例如：面向对象、函数式、命令式、过程式编程等等。</li>
+<li>用途广泛，可以快速开发、交互式代码开发、构建大型复杂应用程序；既可以用于低级系统操作，有可以用于复杂的分析任务。</li>
+<li>面向对象 object-oriented</li>
+<li>高效的高级数据结构 efficient high-level data structures。</li>
+<li>优雅的语法  elegant syntax</li>
+<li>动态类型 dynamic typing（区别于静态声明）</li>
+<li>强制缩进 （后续学习过程特别注意，缩进层级错了会导致解释器无法理解你写的代码）</li>
+<li>垃圾回收机制</li>
+<li>简单、易学、易用</li>
+<li>跨平台（树莓派等嵌入式linux设备、esp8266、windows、osx、linux,32位和64位）</li>
+<li>健壮</li>
+<li>拥有健全的生态系统</li>
+</ol>
+<h2 id="为什么选择python来做数据科学"><a href="#为什么选择python来做数据科学" class="headerlink" title="为什么选择python来做数据科学"></a>为什么选择python来做数据科学</h2><p>我们已经了解过python的特性，其中简单提到生态系统。</p>
+<p>python拥有一套完善的生态系统，拥有强大的科学栈（Scientific Stack）。<br>简单说，科学栈就是很多库的集合，比如我们后续会一起学习的numpy、scipy、matplotlib、pandas ……。</p>
+<p>其中的scipy实现了科学和金融中常用的重要功能。具体后续教程中一起学习。</p>
+<p>对比java,python易学易用，代码可读性很高，免编译。</p>
+<p>对比nodejs,python 科学栈非常诱人。</p>
+<p>对比matlab, python 的大部分科学栈是免费的。同时python有很多现成的科学计算套件非常方便（比如pandas,spider)</p>
+<h2 id="准备实践环境"><a href="#准备实践环境" class="headerlink" title="准备实践环境"></a>准备实践环境</h2><p>在对python 有了简单认识后，我们开始着手准备实验环境。</p>
+<h3 id="在windows上安装python"><a href="#在windows上安装python" class="headerlink" title="在windows上安装python"></a>在windows上安装python</h3><ol>
+<li>从 <a href="https://www.python.org/downloads/" target="_blank" rel="external">python官网</a>获取安装文件(<a href="https://www.python.org/ftp/python/3.6.1/python-3.6.1-amd64.exe" target="_blank" rel="external">64位</a>、<a href="https://www.python.org/ftp/python/3.6.1/python-3.6.1.exe" target="_blank" rel="external">32位</a>)</li>
+<li>以我的64位win10安装过程为例<br><img src="http://upload-images.jianshu.io/upload_images/4830879-1dd57bba117e539c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403231025.png"><br><img src="http://upload-images.jianshu.io/upload_images/4830879-edaf28552851ec1b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403231240.png"><br><img src="http://upload-images.jianshu.io/upload_images/4830879-e7875e10fc387d16.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403231455.png"><br><img src="http://upload-images.jianshu.io/upload_images/4830879-212bbf296615061c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403231512.png"><br><img src="http://upload-images.jianshu.io/upload_images/4830879-d189d547800b41ac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ截图20170403232104.png"></li>
+<li>检查环境变量是否生效，win键+R ==&gt;&gt;输入 cmd 回车==&gt;&gt;依次执行如下命令测试<figure class="highlight plain"><figcaption><span>python 版本</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python -V</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<figure class="highlight plain"><figcaption><span>pip 版本</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip -v</div></pre></td></tr></table></figure>
+<p>如果出现如下结果，恭喜你，python3.6.1版已经被安装到你的电脑上啦。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Microsoft Windows [版本 10.0.14393]</div><div class="line">(c) 2016 Microsoft Corporation。保留所有权利。</div><div class="line"></div><div class="line">C:\Users\ipaddr&gt;python -V</div><div class="line">Python 3.6.1</div><div class="line"></div><div class="line">C:\Users\ipaddr&gt;pip -V</div><div class="line">pip 9.0.1 from d:\codelang\python36\lib\site-packages (python 3.6)</div><div class="line"></div><div class="line">C:\Users\ipaddr&gt;</div></pre></td></tr></table></figure></p>
+<h3 id="选择一款顺手的文本编辑器"><a href="#选择一款顺手的文本编辑器" class="headerlink" title="选择一款顺手的文本编辑器"></a>选择一款顺手的文本编辑器</h3><p>选择一款带代码高亮甚至代码提示的代码编辑器，可以有效提高效率。</p>
+<p>这里推荐几款<br>vscode 是微软开源的一款轻量级代码编辑器，适当添加插件即可成为开发神器<a href="https://code.visualstudio.com/" target="_blank" rel="external">进入官网，点击Download按钮</a></p>
+<p>sublime text 3 <a href="https://download.sublimetext.com/Sublime%20Text%20Build%203126%20x64%20Setup.exe" target="_blank" rel="external">下载64位</a>|<a href="https://download.sublimetext.com/Sublime%20Text%20Build%203126%20Setup.exe" target="_blank" rel="external">下载32位</a></p>
+<p>atom <a href="https://github.com/atom/atom/releases/download/v1.15.0/AtomSetup-x64.msi" target="_blank" rel="external">下载64位</a>|<a href="https://github.com/atom/atom/releases/download/v1.15.0/AtomSetup.exe" target="_blank" rel="external">下载32位</a></p>
+<p>notepad++ <a href="https://notepad-plus-plus.org/repository/7.x/7.3.3/npp.7.3.3.Installer.x64.exe" target="_blank" rel="external">下载64位</a>|<a href="https://notepad-plus-plus.org/repository/7.x/7.3.3/npp.7.3.3.Installer.exe" target="_blank" rel="external">下载32位</a></p>
+<h3 id="准备科学栈"><a href="#准备科学栈" class="headerlink" title="准备科学栈"></a>准备科学栈</h3><p>这里主要演示如何使用pip 安装 一些包（包可以是一个库或多个库的集合）</p>
+<p>我们计划后续边学边准备我们自己的科学栈</p>
+<p>先来安装一个ipython吧，这里有必要简单介绍一下ipython，IPython 可以认为是一个开发工具，类似于我之前提到的spyder.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install ipython</div></pre></td></tr></table></figure></p>
+<p>结果如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">C:\Users\ipaddr&gt;pip install ipython</div><div class="line">Collecting ipython</div><div class="line">  Downloading ipython-5.3.0-py3-none-any.whl (750kB)</div><div class="line">    100% |████████████████████████████████| 757kB 917kB/s</div><div class="line">Collecting pygments (from ipython)</div><div class="line">  Downloading Pygments-2.2.0-py2.py3-none-any.whl (841kB)</div><div class="line">    100% |████████████████████████████████| 849kB 854kB/s</div><div class="line">Collecting traitlets&gt;=4.2 (from ipython)</div><div class="line">  Downloading traitlets-4.3.2-py2.py3-none-any.whl (74kB)</div><div class="line">    100% |████████████████████████████████| 81kB 2.5MB/s</div><div class="line">Collecting colorama; sys_platform == &quot;win32&quot; (from ipython)</div><div class="line">  Using cached colorama-0.3.7-py2.py3-none-any.whl</div><div class="line">Collecting simplegeneric&gt;0.8 (from ipython)</div><div class="line">  Downloading simplegeneric-0.8.1.zip</div><div class="line">Requirement already satisfied: setuptools&gt;=18.5 in d:\codelang\python36\lib\site-packages (from ipython)</div><div class="line">Collecting prompt-toolkit&lt;2.0.0,&gt;=1.0.4 (from ipython)</div><div class="line">  Downloading prompt_toolkit-1.0.14-py3-none-any.whl (248kB)</div><div class="line">    100% |████████████████████████████████| 256kB 1.7MB/s</div><div class="line">Collecting decorator (from ipython)</div><div class="line">  Downloading decorator-4.0.11-py2.py3-none-any.whl</div><div class="line">Collecting pickleshare (from ipython)</div><div class="line">  Downloading pickleshare-0.7.4-py2.py3-none-any.whl</div><div class="line">Collecting ipython-genutils (from traitlets&gt;=4.2-&gt;ipython)</div><div class="line">  Downloading ipython_genutils-0.2.0-py2.py3-none-any.whl</div><div class="line">Collecting six (from traitlets&gt;=4.2-&gt;ipython)</div><div class="line">  Using cached six-1.10.0-py2.py3-none-any.whl</div><div class="line">Collecting wcwidth (from prompt-toolkit&lt;2.0.0,&gt;=1.0.4-&gt;ipython)</div><div class="line">  Downloading wcwidth-0.1.7-py2.py3-none-any.whl</div><div class="line">Installing collected packages: pygments, ipython-genutils, decorator, six, traitlets, colorama, simplegeneric, wcwidth, prompt-toolkit, pickleshare, ipython</div><div class="line">  Running setup.py install for simplegeneric ... done</div><div class="line">Successfully installed colorama-0.3.7 decorator-4.0.11 ipython-5.3.0 ipython-genutils-0.2.0 pickleshare-0.7.4 prompt-toolkit-1.0.14 pygments-2.2.0 simplegeneric-0.8.1 six-1.10.0 traitlets-4.3.2 wcwidth-0.1.7</div><div class="line"></div><div class="line">C:\Users\ipaddr&gt;</div></pre></td></tr></table></figure></p>
+<p>这样我们就安装好了ipython。从结果可以看到，新版本的pip已经可以自动安装该package所依赖的package</p>
+<p>后续我们会经常这样安装package。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2017/04/03/pythonGuide-dataScience-0/">简单认识python</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">MonkeyHi</a></p>
+        <p><span>发布时间:</span>2017-04-03, 14:19:28</p>
+        <p><span>最后更新:</span>2017-04-04, 17:41:23</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2017/04/03/pythonGuide-dataScience-0/" title="简单认识python">https://MonkeyHi.github.io/2017/04/03/pythonGuide-dataScience-0/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://MonkeyHi.github.io/2017/04/03/pythonGuide-dataScience-0/　　作者: MonkeyHi" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/04/04/pythonGuide-dataScience-1/">
+                    第一次运行python程序,从命令行交互开始
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/04/01/powershell-guid-0/">
+                    修改powershell脚本可执行权限
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Python从零开始系列"><span class="toc-number">1.</span> <span class="toc-text">Python从零开始系列</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#关于Python"><span class="toc-number">1.1.</span> <span class="toc-text">关于Python</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#python是什么？"><span class="toc-number">1.1.1.</span> <span class="toc-text">python是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#python-历史"><span class="toc-number">1.1.2.</span> <span class="toc-text">python 历史</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#python-特性"><span class="toc-number">1.1.3.</span> <span class="toc-text">python 特性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么选择python来做数据科学"><span class="toc-number">1.2.</span> <span class="toc-text">为什么选择python来做数据科学</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#准备实践环境"><span class="toc-number">1.3.</span> <span class="toc-text">准备实践环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#在windows上安装python"><span class="toc-number">1.3.1.</span> <span class="toc-text">在windows上安装python</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#选择一款顺手的文本编辑器"><span class="toc-number">1.3.2.</span> <span class="toc-text">选择一款顺手的文本编辑器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#准备科学栈"><span class="toc-number">1.3.3.</span> <span class="toc-text">准备科学栈</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"简单认识python　| MonkeyHi　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/04/04/pythonGuide-dataScience-1/" title="上一篇: 第一次运行python程序,从命令行交互开始">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/04/01/powershell-guid-0/" title="下一篇: 修改powershell脚本可执行权限">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/01/10/continuous-intergration-java/">springboot借助coding.net持续集成和持续部署</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/10/cicdbase/">持续集成</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/29/ubuntu1604upgradekernel/">ubuntu1604升级内核，开启BBR</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/07/vscode-nunjucks-snippets/">vscode-nunjucks-snippets</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/pythonGuide-dataScience-2/">怎么运行python文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/04/pythonGuide-dataScience-1/">第一次运行python程序,从命令行交互开始</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/03/pythonGuide-dataScience-0/">简单认识python</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/01/powershell-guid-0/">修改powershell脚本可执行权限</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/04/21/hello-world/">Hello World 第一个post</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2017-2019 MonkeyHi
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+    <script>
+        var originTitle = document.title;
+        var titleTime;
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                document.title = "(つェ⊂) 我藏好了哦~ " + originTitle;
+                clearTimeout(titleTime);
+            }
+            else {
+                document.title = "(*´∇｀*) 被你发现啦~ " + originTitle;
+                titleTime = setTimeout(function() {
+                    document.title = originTitle;
+                }, 2000);
+            }
+        })
+    </script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
