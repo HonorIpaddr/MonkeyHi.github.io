@@ -25,16 +25,16 @@
 <meta property="og:description" content="持续集成 ？——？大概数周前，突然有学长问我有没有接触过“持续集成”。
 在我脑海中，这是一个陌生的词汇，于是百度了解了一番。实际上有开发和部署经验的小伙伴对持续集成不会非常陌生的，特别是那些喜欢自己写webhook的小伙伴。这篇文章来聊聊持续集成。
 互联网软件从开发到上线，后续迭代更新，已经有一套近乎标准的流程。其中 持续集成（Continuous integration，简称CI）则是核心流程。">
-<meta property="og:image" content="https://MonkeyHi.github.io/cicdbase/timg.jpg">
-<meta property="og:image" content="https://MonkeyHi.github.io/cicdbase/pic1.png">
-<meta property="og:image" content="https://MonkeyHi.github.io/cicdbase/img2.png">
+<meta property="og:image" content="https://MonkeyHi.github.io/2019/01/10/cicdbase/timg.jpg">
+<meta property="og:image" content="https://MonkeyHi.github.io/2019/01/10/cicdbase/pic1.png">
+<meta property="og:image" content="https://MonkeyHi.github.io/2019/01/10/cicdbase/img2.png">
 <meta property="og:updated_time" content="2019-02-25T07:57:02.953Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="持续集成">
 <meta name="twitter:description" content="持续集成 ？——？大概数周前，突然有学长问我有没有接触过“持续集成”。
 在我脑海中，这是一个陌生的词汇，于是百度了解了一番。实际上有开发和部署经验的小伙伴对持续集成不会非常陌生的，特别是那些喜欢自己写webhook的小伙伴。这篇文章来聊聊持续集成。
 互联网软件从开发到上线，后续迭代更新，已经有一套近乎标准的流程。其中 持续集成（Continuous integration，简称CI）则是核心流程。">
-<meta name="twitter:image" content="https://MonkeyHi.github.io/cicdbase/timg.jpg">
+<meta name="twitter:image" content="https://MonkeyHi.github.io/2019/01/10/cicdbase/timg.jpg">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -297,7 +297,7 @@
         <h2 id="持续集成-？——？"><a href="#持续集成-？——？" class="headerlink" title="持续集成 ？——？"></a>持续集成 ？——？</h2><p>大概数周前，突然有学长问我有没有接触过“<strong>持续集成</strong>”。</p>
 <p>在我脑海中，这是一个陌生的词汇，于是百度了解了一番。实际上有开发和部署经验的小伙伴对持续集成不会非常陌生的，特别是那些喜欢自己写webhook的小伙伴。这篇文章来聊聊<strong>持续集成</strong>。</p>
 <p>互联网软件从开发到上线，后续迭代更新，已经有一套近乎标准的流程。其中 <strong>持续集成</strong>（Continuous integration，简称CI）则是核心流程。</p>
-<p><img src="cicdbase/timg.jpg" alt="tuyi"></p>
+<p><img src="/2019/01/10/cicdbase/timg.jpg" alt="tuyi"></p>
 <a id="more"></a>
 <h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><blockquote>
 <p>大师Martin Fowler对持续集成是这样定义的:持续集成是一种软件开发实践，即团队开发成员经常集成他们的工作，通常每个成员每天至少集成一次，也就意味着每天可能会发生多次集成。每次集成都通过自动化的构建（包括编译，发布，自动化测试)来验证，从而尽快地发现集成错误。许多团队发现这个过程可以大大减少集成的问题，让团队能够更快的开发内聚的软件。</p>
@@ -310,7 +310,7 @@
 <li>减少不必要的成本投入，可以自动化解决的重复乏味的事情，没必要浪费人力和时间；</li>
 <li>实际上还有很多有点，大家慢慢感受啦~<h3 id="一般步骤"><a href="#一般步骤" class="headerlink" title="一般步骤"></a>一般步骤</h3>持续集成的核心措施, 集成到主干前, 自动化测试, 只有通过,才可以集成到主干。</li>
 </ol>
-<p>成功集成到主干后,也意味着可以部署上线。<br>这便牵扯出另外两个相关概念，持续交付、持续部署。<br><img src="cicdbase/pic1.png" alt="pic1.png"><br>这里一起看一下集成的一般步骤：</p>
+<p>成功集成到主干后,也意味着可以部署上线。<br>这便牵扯出另外两个相关概念，持续交付、持续部署。<br><img src="/2019/01/10/cicdbase/pic1.png" alt="pic1.png"><br>这里一起看一下集成的一般步骤：</p>
 <ol>
 <li>设计</li>
 <li>开发</li>
@@ -370,7 +370,7 @@
 </ol>
 <h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>从开发到上线，整体流程：</p>
 <p>持续集成——&gt;持续交付——&gt;持续部署</p>
-<p><img src="cicdbase/img2.png" alt="img2.png"></p>
+<p><img src="/2019/01/10/cicdbase/img2.png" alt="img2.png"></p>
 <h3 id="Jenkins和持续集成什么关系"><a href="#Jenkins和持续集成什么关系" class="headerlink" title="Jenkins和持续集成什么关系"></a>Jenkins和持续集成什么关系</h3><p>Jenkins是一个开源软件项目，是基于Java开发的一种持续集成工具，用于监控持续重复的工作，旨在提供一个开放易用的软件平台，使软件的持续集成变成可能。</p>
 <p>没错，它就是一个具体的持续集成解决方案。基于java实现。<br>可以实现：</p>
 <ol>
