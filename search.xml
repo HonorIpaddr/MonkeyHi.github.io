@@ -218,10 +218,9 @@
     <entry>
       <title><![CDATA[ubuntu1604升级内核，开启BBR]]></title>
       <url>https://MonkeyHi.github.io/2017/04/29/ubuntu1604upgradekernel/</url>
-      <content type="html"><![CDATA[<p>BBR 目的是要尽量跑满带宽, 并且尽量不要有排队的情况, 效果并不比速锐差<br>Linux kernel 4.9+ 已支持 tcp_bbr 下面简单讲述基于KVM架构VPS如何开启<br><a id="more"></a></p>
+      <content type="html"><![CDATA[<p>BBR 目的是要尽量跑满带宽, 并且尽量不要有排队的情况。作为单边加速协议，油管观影效果还是很棒哒。<br>Linux kernel 4.9+ 已支持 tcp_bbr 下面简单讲述基于KVM架构VPS如何开启<br><a id="more"></a></p>
 <h2 id="操作环境"><a href="#操作环境" class="headerlink" title="操作环境"></a>操作环境</h2><ul>
-<li>Ubuntu 16.04.2 LTS 64位</li>
-<li>aliyun ECS</li>
+<li>Ubuntu 16.04.2 LTS 64位（理论上，支持新内核的其它发行版也可以）</li>
 </ul>
 <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><h3 id="更新系统"><a href="#更新系统" class="headerlink" title="更新系统"></a>更新系统</h3>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt update</div><div class="line">apt upgrade</div></pre></td></tr></table></figure>
 <p>###<br> 查看当前内核版本<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">uname -a</div></pre></td></tr></table></figure></p>
@@ -588,8 +587,8 @@
   
     
     <entry>
-      <title><![CDATA[about]]></title>
-      <url>https://MonkeyHi.github.io/about/index.html</url>
+      <title><![CDATA[tags]]></title>
+      <url>https://MonkeyHi.github.io/tags/index.html</url>
       <content type="html"></content>
     </entry>
     
@@ -600,8 +599,8 @@
     </entry>
     
     <entry>
-      <title><![CDATA[tags]]></title>
-      <url>https://MonkeyHi.github.io/tags/index.html</url>
+      <title><![CDATA[about]]></title>
+      <url>https://MonkeyHi.github.io/about/index.html</url>
       <content type="html"></content>
     </entry>
     
